@@ -34,37 +34,32 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
     return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_METHOD(newPaymentRequest:(NSString *)requestID
-                  merchantAccount:(NSString *) merchantAccount
-                  transactionType:(NSString *) transactionType
-                  amount:(NSInteger *) amount
-                  paymentMethod:(NSString *)  paymentMethod
-                  currency:(NSString *) currency
+RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                   onPaymentSuccessfull:(RCTResponseSenderBlock) onSuccess
                   onPaymentFailed:(RCTResponseSenderBlock) onFailure){
     NSLog(@"creating payment instance");
-    WDECPayment *payment = [self createPayment:paymentMethod];
+    WDECPayment * wcpayment = [self createPayment:payment[@"paymentMethod"]];
     NSLog(@"creating populating fields");
-    [payment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber numberWithInteger: 10]];
-    [payment setCurrency:(NSString * _Nullable) currency];
-    [payment setTransactionType : WDECTransactionTypePurchase];
-    [payment setMerchantAccountID:(NSString * _Nullable) merchantAccount];
-    [payment setRequestID : (NSString * _Nullable) requestID];
+    
+    [wcpayment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber decimalNumberWithString: payment[@"amount"]]];
+    [wcpayment setCurrency:(NSString * _Nullable) payment[@"currency"]];
+    [wcpayment setTransactionType : WDECTransactionTypePurchase];
+    [wcpayment setMerchantAccountID:(NSString * _Nullable) payment[@"merchantAccount"]];
+    [wcpayment setRequestID : (NSString * _Nullable) payment[@"requestID"]];
     NSLog(@"converting fields to strings");
-    NSString *requestIDStr = payment.requestID;
-    NSString *transactionTypeStr = WDECTransactionTypeGetCode(payment.transactionType) ?: @"";
-    NSString *amountStr = [payment.amount stringValue];
-    NSString *currencyStr = payment.currency ?: @"";
-    NSString *IPAddressStr = payment.IPAddress;
-    
-    
+    NSString *requestIDStr = wcpayment.requestID;
+    NSString *transactionTypeStr = WDECTransactionTypeGetCode(wcpayment.transactionType) ?: @"";
+    NSString *amountStr = [wcpayment.amount stringValue];
+    NSString *currencyStr = wcpayment.currency ?: @"";
+    NSString *IPAddressStr = wcpayment.IPAddress;
+    NSString *merchantAccount = wcpayment.merchantAccountID;
     
     
     NSDate *requestTimestamp = [NSDate date]; // UTC
     NSString *requestTimestampStr = [[NSDateFormatter timestampDateFormatter] stringFromDate:requestTimestamp];
     NSLog(@"creating signature %@",requestTimestampStr);
     
-    payment.signature = [self
+    wcpayment.signature = [self
                          serverSideSignatureCalculationV2:requestTimestampStr
                          requestID:requestIDStr
                          merchantID:merchantAccount
