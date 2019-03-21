@@ -7,14 +7,16 @@
 #import "NSDateFormatter+Utils.h"
 
 NSString *const PMTitleCard = @"Card";
-
-
+RCTResponseSenderBlock onPaymentSuccess;
+RCTResponseSenderBlock onPaymentFail;
 @implementation RNWirecard
 RCT_EXPORT_MODULE()
 
+
+
 RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseSenderBlock)onSuccess onFailure:(RCTResponseSenderBlock)onFailure)
 {
-    NSLog(@"startin native module");
+    NSLog(@"OBJ startin native module");
     @try{
         self.client = [[WDECClient alloc] initWithEnvironment:WDECEnvironmentTEST];
         onSuccess(@[[NSNull null]]);
@@ -37,16 +39,17 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
 RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                   onPaymentSuccessfull:(RCTResponseSenderBlock) onSuccess
                   onPaymentFailed:(RCTResponseSenderBlock) onFailure){
-    NSLog(@"creating payment instance");
+    NSLog(@"OBJ creating payment instance");
     WDECPayment * wcpayment = [self createPayment:payment[@"paymentMethod"]];
-    NSLog(@"creating populating fields");
-    
+    NSLog(@"OBJ creating populating fields");
+    self.onPaymentFailed = onFailure;
+    self.onPaymentSuccessfull = onSuccess;
     [wcpayment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber decimalNumberWithString: payment[@"amount"]]];
     [wcpayment setCurrency:(NSString * _Nullable) payment[@"currency"]];
     [wcpayment setTransactionType : WDECTransactionTypePurchase];
-    [wcpayment setMerchantAccountID:(NSString * _Nullable) payment[@"merchantAccount"]];
+    [wcpayment setMerchantAccountID:(NSString * _Nullable) payment[@"merchantAccountID"]];
     [wcpayment setRequestID : (NSString * _Nullable) payment[@"requestID"]];
-    NSLog(@"converting fields to strings");
+    NSLog(@"OBJ converting fields to strings");
     NSString *requestIDStr = wcpayment.requestID;
     NSString *transactionTypeStr = WDECTransactionTypeGetCode(wcpayment.transactionType) ?: @"";
     NSString *amountStr = [wcpayment.amount stringValue];
@@ -57,7 +60,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     
     NSDate *requestTimestamp = [NSDate date]; // UTC
     NSString *requestTimestampStr = [[NSDateFormatter timestampDateFormatter] stringFromDate:requestTimestamp];
-    NSLog(@"creating signature %@",requestTimestampStr);
+    NSLog(@"OBJ creating signature ",wcpayment.merchantAccountID);
     
     wcpayment.signature = [self
                          serverSideSignatureCalculationV2:requestTimestampStr
@@ -68,16 +71,17 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                          currency:currencyStr
                          IPAddress:IPAddressStr
                          secretKey:@"9e0130f6-2e1e-4185-b0d5-dc69079c75cc"];
-    NSLog(@"%@",payment);
+    NSLog(@"OBJ right before call %@",wcpayment);
     if(self.client){
         @weakify(self);
-        [self.client makePayment:(WDECPayment*)payment withCompletion:^(WDECPaymentResponse * _Nullable response,
+        [self.client makePayment:(WDECPayment*)wcpayment withCompletion:^(WDECPaymentResponse * _Nullable response,
                                                                         NSError * _Nullable error)
          {
              @strongify(self);
-             NSLog(@"inside the block %@",payment);
+             NSLog(@"inside the block %@",wcpayment);
              NSMutableArray * events = [NSMutableArray array];
              if(error){
+                 NSLog(@"error ",error.localizedDescription);
                  [events addObject:@"error while paying"];
                  self.onPaymentFailed(@[[NSNull null], events]);
              }else{
