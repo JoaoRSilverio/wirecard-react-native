@@ -16,12 +16,7 @@
 
 -(void)initiateClient:(NSString*)environment onSuccess:(RCTResponseSenderBlock)onSuccess onFailure:(RCTResponseSenderBlock)onFailure ;
 -(void)newPaymentRequest:
-(NSString *)requestID
-         merchantAccount:(NSString *) merchantAccount
-         transactionType:(NSString *) transactionType
-                  amount:(NSInteger *) amount
-           paymentMethod:(NSString *) paymentMethod
-                currency:(NSString *) currency
+    (NSDictionary *) payment
     onPaymentSuccessfull:(RCTResponseSenderBlock) onSuccess
          onPaymentFailed:(RCTResponseSenderBlock) onFailure
 ;
