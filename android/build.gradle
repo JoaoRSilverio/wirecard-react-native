@@ -1,12 +1,21 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+        maven {
+            url 'https://maven.fabric.io/public'
+        }
 
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.3.1'
+        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.google.gms:google-services:4.0.1'
     }
 }
 
@@ -17,8 +26,8 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 22
+        minSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0.8"
     }
@@ -37,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:+'
+    implementation 'com.facebook.react:react-native:+'
      implementation "com.wirecard.ecom:card:$wirecardEcomLibraryVersion"
     implementation "com.wirecard.ecom:sepa:$wirecardEcomLibraryVersion"
     implementation "com.wirecard.ecom:zapp:$wirecardEcomLibraryVersion"
