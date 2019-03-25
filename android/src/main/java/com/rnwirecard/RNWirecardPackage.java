@@ -1,6 +1,9 @@
 
 package com.rnwirecard;
 
+import android.app.Activity;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +17,7 @@ public class RNWirecardPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
       List<NativeModule> modules = new ArrayList<>();
-      modules.add(new WirecardModule(reactContext) );
+      modules.add(new RNWirecardModule(reactContext) );
       return modules;
   }
 
