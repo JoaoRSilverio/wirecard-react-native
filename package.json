@@ -1,6 +1,6 @@
 {
   "name": "wirecard-react-native",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "Wirecard Mobile SDK Credit Card Only React-Native implementation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,7 +11,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "react-native","wirecard","payment"
+    "react-native",
+    "wirecard",
+    "payment"
   ],
   "author": "joao.r.silverio@gmail.com",
   "license": "MIT",
@@ -26,7 +28,7 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.3.3333"
   },
-  "files":[
+  "files": [
     "lib/**/*",
     "android/**/*",
     "ios/**/*"

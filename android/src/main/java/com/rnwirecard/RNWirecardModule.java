@@ -1,45 +1,22 @@
 
 package com.rnwirecard;
 
-import com.facebook.common.activitylistener.BaseActivityListener;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.app.Activity;
-import android.telecom.Call;
+import android.content.Intent;
 import android.util.Log;
-import android.view.View;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
+
 /*
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 */
-import java.util.Calendar;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-//import java.util.Optional;
-import java.util.TimeZone;
-import java.util.logging.Logger;
-
-import android.util.Base64;
-import android.widget.Toast;
-
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.Callback;
@@ -47,29 +24,29 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 
 import com.wirecard.ecom.Client;
+import com.wirecard.ecom.model.CardToken;
 import com.wirecard.ecom.model.Payment;
-import com.wirecard.ecom.model.Status;
 import com.wirecard.ecom.model.TransactionType;
 import com.wirecard.ecom.model.out.PaymentResponse;
 import com.wirecard.ecom.card.model.CardPayment;
+// import com.wirecard.ecom.paypal.model.PayPalPayment;
+// import com.wirecard.ecom.sepa.model.SepaPayment;
+// import com.wirecard.ecom.zapp.model.ZappPayment;
 
 
 
 
 public class RNWirecardModule extends ReactContextBaseJavaModule implements ActivityEventListener {
-    private static final String ENCRYPTION_ALGORITHM = "HS256";
-    private static final String UTF_8 = "UTF-8";
-    public final static String URL_EE_TEST = "https://api-test.wirecard.com";
+    //private static final String ENCRYPTION_ALGORITHM = "HS256";
+    //private static final String UTF_8 = "UTF-8";
     public final static int REQUEST_TIMEOUT = 30;
     public Callback onPaymentFailure;
     public Callback onPaymentSuccess;
     public Client wirecardClient;
-    public CardPayment wirecardPayment;
+    //public CardPayment wirecardPayment;
     private final ReactApplicationContext reactContext;
 
     public RNWirecardModule(ReactApplicationContext reactContext) {
@@ -78,63 +55,87 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         reactContext.addActivityEventListener(this);
     }
 
-    @ReactMethod
-    public void initiateClient(String enviroment,Callback onSuccess,Callback onFailure){
-        Log.i("JAVA", "initiating client");
-        wirecardClient = new Client(this.getCurrentActivity(),URL_EE_TEST, REQUEST_TIMEOUT);
-        onSuccess.invoke();
-    }
-    @ReactMethod
-    public void newPaymentRequest(
-            ReadableMap payment,
-            Callback onPaymentAccepted,
-            Callback onPaymentRejected
-    ) {
-        wirecardPayment =  getAppropriatePayment(payment);
-        /// this wont be present in final version
-        //final String secret = "9e0130f6-2e1e-4185-b0d5-dc69079c75cc"; //     // test data from 3D Manual Brand Card Recognition
-        this.onPaymentFailure = onPaymentRejected;
-        this.onPaymentSuccess = onPaymentAccepted;
-        wirecardClient.startPayment(wirecardPayment);
-
-    }
-    public CardPayment getAppropriatePayment(ReadableMap paymentInfo ){
-        BigDecimal amount = getAmount(paymentInfo.getString("amount"));
-        switch (paymentInfo.getString("paymentMethod")) {
-            case "card":
-                //Log.i("JAVA", "processing card");
-                wirecardPayment = new CardPayment.Builder()
-                        .setSignature(paymentInfo.getString("signature"))
-                        .setMerchantAccountId(paymentInfo.getString("merchantAccountID"))
-                        .setTransactionType(TransactionType.PURCHASE)
-                        .setRequestId(paymentInfo.getString("requestID"))
-                        .setAmount(amount)
-                        .setCurrency(paymentInfo.getString("currency"))
-                        .build();
-                wirecardPayment.setAnimatedCardPayment(true);
-                break;
-            default:
-                Log.i("JAVA", "processing card by default");
-                wirecardPayment = new CardPayment.Builder()
-                        .setSignature(paymentInfo.getString("signature"))
-                        .setMerchantAccountId(paymentInfo.getString("merchantAccountID"))
-                        .setRequestId(paymentInfo.getString("requestID"))
-                        .setAmount(amount)
-                        .setTransactionType(TransactionType.PURCHASE)
-                        .setCurrency(paymentInfo.getString("currency"))
-                        .build();
-                wirecardPayment.setAnimatedCardPayment(true);
-                break;
-        }
-        return  wirecardPayment;
-    }
-    public BigDecimal getAmount(String amount){
-        BigDecimal parsedAmount =new BigDecimal(amount).setScale(0, RoundingMode.HALF_EVEN);
-        return parsedAmount;
+    @Override
+    public String getName() {
+        return "RNWirecard";
     }
 
     @Override
-    public void onActivityResult(int requestCode,int resultCode,Intent data) {
+    public void onNewIntent(Intent intent){
+
+    }
+    
+    @ReactMethod
+    public void initiateClient(Callback onSuccess,Callback onFailure,String environment){
+
+       try{
+        wirecardClient = new Client(this.getCurrentActivity(),environment, REQUEST_TIMEOUT);
+        Log.i("wirecard-react-native", "initiating client with endpoint: " + environment);
+        onSuccess.invoke();
+       }catch (Exception e){
+           Log.i("wirecard-react-native", "client failed to initiate with endpoint: " + environment);
+           onFailure.invoke(e.getMessage());
+       }
+        
+    }
+
+    @ReactMethod
+    public void newPaymentRequest(ReadableMap payment,Callback onPaymentAccepted,Callback onPaymentRejected) {
+        this.onPaymentFailure = onPaymentRejected;
+        this.onPaymentSuccess = onPaymentAccepted;
+        this.startRequestedPayment(payment);
+    }
+
+    public void startRequestedPayment(ReadableMap paymentInfo ){
+        switch (paymentInfo.getString("paymentMethod")) {
+            case "card":
+                Log.i("wirecard-react-native", "processing Credit Card payment");
+                CardPayment cardPayment = this.createCardPayment(paymentInfo);
+                wirecardClient.startPayment(cardPayment);
+                break;
+
+            case "paypal":
+                Log.i("wirecard-react-native", "processing PayPal payment");
+                //PayPalPayment payPalPayment = this.createPayPalPayment(paymentInfo);
+                //wirecardClient.startPayment(payPalPayment);
+            case "sepa":
+                Log.i("wirecard-react-native", "processing SEPA payment");
+                // SepaPayment sepaPayment = this.createSepaPayment(paymentInfo);
+                // wirecardClient.startPayment(sepaPayment);
+            case "zapp":
+                Log.i("wirecard-react-native", "processing Zapp payment");
+                // ZappPayment zappPayment = this.createZappPayment(paymentInfo);
+                // wirecardClient.startPayment(zappPayment);
+            default:
+                Log.i("wirecard-react-native", "processing Credit Card by default");
+                CardPayment defaultCardPayment = this.createCardPayment(paymentInfo);
+                break;
+        }
+    }
+
+    public CardPayment createCardPayment(ReadableMap paymentInfo){
+        CardPayment wirecardPayment = new CardPayment.Builder()
+                .setSignature(paymentInfo.getString("signature"))
+                .setMerchantAccountId(paymentInfo.getString("merchantAccountID"))
+                .setTransactionType(TransactionType.PURCHASE)
+                .setRequestId(paymentInfo.getString("requestID"))
+                .setAmount(getAmount(paymentInfo.getString("amount")))
+                .setCurrency(paymentInfo.getString("currency"))
+                .build();
+        if(paymentInfo.getString("token") != null){
+            String token = paymentInfo.getString("token");
+            String maskedAccountNumber = paymentInfo.getString("maskedAccountNumber");
+            CardToken cardToken = new CardToken();
+            cardToken.setMaskedAccountNumber(maskedAccountNumber);
+            cardToken.setTokenId(token);
+            wirecardPayment.setCardToken(cardToken);
+        }
+        wirecardPayment.setAnimatedCardPayment(true);
+        return wirecardPayment;
+    }
+
+    @Override
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
         if(requestCode == Client.PAYMENT_SDK_REQUEST_CODE){
             Serializable paymentSDKResponse = data.getSerializableExtra(Client.EXTRA_PAYMENT_SDK_RESPONSE);
             if(paymentSDKResponse instanceof PaymentResponse){
@@ -151,14 +152,22 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             this.onPaymentSuccess.invoke();
         }
     }
-    @Override
-    public void onNewIntent(Intent intent) {
 
+
+
+    public static  BigDecimal getAmount(String amount){
+        BigDecimal parsedAmount =new BigDecimal(amount).setScale(0, RoundingMode.HALF_EVEN);
+        return parsedAmount;
     }
-    @Override
-    public String getName() {
-        return "RNWirecard";
-    }
+
+
+
+
+
+
+
+
+
 
     /**
      *  ALL THIS METHODS ARE ONLY FOR TESTING IMPLEMENTATION
