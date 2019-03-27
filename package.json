@@ -1,6 +1,6 @@
 {
   "name": "wirecard-react-native",
-  "version": "1.1.1",
+  "version": "1.1.7",
   "description": "Wirecard Mobile SDK Credit Card Only React-Native implementation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
