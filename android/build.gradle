@@ -23,7 +23,7 @@ buildscript {
 
 android {
 
-    compileSdkVersion 28
+    compileSdkVersion 27
 
     defaultConfig {
         minSdkVersion 19
@@ -58,7 +58,7 @@ repositories {
 dependencies {
     compileOnly'com.facebook.react:react-native:0.57.2'
     implementation "com.wirecard.ecom:card:$wirecardEcomLibraryVersion"
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:appcompat-v7:27.0.0'
 
     // #TODO implement other payment methods besides card.
     //implementation 'com.github.wirecard:paymentSDK-Android:3.1.0-cardScannerDisabled'
