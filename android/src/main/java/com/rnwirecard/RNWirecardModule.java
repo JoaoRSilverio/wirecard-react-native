@@ -75,7 +75,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             onSuccess.invoke();
         }catch (Exception e){
             Log.i("wirecard-react-native", "client failed to initiate with endpoint: " + environment);
-            Log.i("wirecard-react-native", e.getErrorMessage());
+            Log.i("wirecard-react-native", e.getMessage());
 
             onFailure.invoke();
         }
