@@ -47,12 +47,12 @@ export const PAYMENT_METHODS = {
 
 export const ENVIRONMENTS = {
                                     // SSL cert valid until
-    GERMANY_PROD:'api.wirecard.com', // 03/12/2020
-    GERMANY_TEST:'api-test.wirecard.com', // 03/12/2020
-    SINGAPORE_PROD:'api.wirecard.com.sg', // 05/21/2020
-    SINGAPORE_TEST:'test.wirecard.com.sg', // 09/04/2020
-    TORONTO_PROD:'engine.elastic-payments.com', // 08/27/2020
-    TORONTO_TEST:'sandbox-engine.thesolution.com' // 12/01/2018
+    GERMANY_PROD:'https://api.wirecard.com', // 03/12/2020
+    GERMANY_TEST:'https://api-test.wirecard.com', // 03/12/2020
+    SINGAPORE_PROD:'https://api.wirecard.com.sg', // 05/21/2020
+    SINGAPORE_TEST:'https://test.wirecard.com.sg', // 09/04/2020
+    TORONTO_PROD:'https://engine.elastic-payments.com', // 08/27/2020
+    TORONTO_TEST:'https://sandbox-engine.thesolution.com' // 12/01/2018
 
 }
 

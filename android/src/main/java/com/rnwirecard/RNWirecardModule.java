@@ -32,6 +32,7 @@ import com.wirecard.ecom.model.Payment;
 import com.wirecard.ecom.model.TransactionType;
 import com.wirecard.ecom.model.out.PaymentResponse;
 import com.wirecard.ecom.card.model.CardPayment;
+
 // import com.wirecard.ecom.paypal.model.PayPalPayment;
 // import com.wirecard.ecom.sepa.model.SepaPayment;
 // import com.wirecard.ecom.zapp.model.ZappPayment;
@@ -64,21 +65,25 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
     public void onNewIntent(Intent intent){
 
     }
-    
+
     @ReactMethod
-    public void initiateClient(Callback onSuccess,Callback onFailure,String environment){
+    public void initiateClient(String environment,Callback onSuccess,Callback onFailure){
+        Log.i("wirecard-react-native", " trying to initiate client with endpoint: " + environment);
+        try{
+            wirecardClient = new Client(this.getCurrentActivity(),environment, REQUEST_TIMEOUT);
+            Log.i("wirecard-react-native", "initiating client with endpoint: " + environment);
+            onSuccess.invoke();
+        }catch (Exception e){
+            Log.i("wirecard-react-native", "client failed to initiate with endpoint: " + environment);
+            Log.i("wirecard-react-native", e.getErrorMessage());
 
-       try{
-        wirecardClient = new Client(this.getCurrentActivity(),environment, REQUEST_TIMEOUT);
-        Log.i("wirecard-react-native", "initiating client with endpoint: " + environment);
-        onSuccess.invoke();
-       }catch (Exception e){
-           Log.i("wirecard-react-native", "client failed to initiate with endpoint: " + environment);
-           onFailure.invoke(e.getMessage());
-       }
-        
+            onFailure.invoke();
+        }
     }
-
+    @ReactMethod
+    public void testBridge(String received){
+        Log.i("wirecard-react-native",received);
+    }
     @ReactMethod
     public void newPaymentRequest(ReadableMap payment,Callback onPaymentAccepted,Callback onPaymentRejected) {
         this.onPaymentFailure = onPaymentRejected;
@@ -93,7 +98,6 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
                 CardPayment cardPayment = this.createCardPayment(paymentInfo);
                 wirecardClient.startPayment(cardPayment);
                 break;
-
             case "paypal":
                 Log.i("wirecard-react-native", "processing PayPal payment");
                 //PayPalPayment payPalPayment = this.createPayPalPayment(paymentInfo);
@@ -122,7 +126,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
                 .setAmount(getAmount(paymentInfo.getString("amount")))
                 .setCurrency(paymentInfo.getString("currency"))
                 .build();
-        if(paymentInfo.getString("token") != null){
+        if(paymentInfo.hasKey("token")){
             String token = paymentInfo.getString("token");
             String maskedAccountNumber = paymentInfo.getString("maskedAccountNumber");
             CardToken cardToken = new CardToken();
@@ -146,6 +150,8 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
 
     public void responseHelper(PaymentResponse paymentResponse,ReactApplicationContext context){
         if(paymentResponse.getErrorMessage()  != null){
+            Log.i("wirecard-react-native", "payment failed:\n" + paymentResponse.getErrorMessage() );
+
             this.onPaymentFailure.invoke();
         }
         if(paymentResponse.getPayment() != null && paymentResponse.getPayment().getStatuses() != null){
