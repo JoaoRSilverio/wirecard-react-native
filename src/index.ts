@@ -45,8 +45,8 @@ export const PAYMENT_METHODS = {
     }
 }
 
-export const ENVIRONMENTS = {
-                                    // SSL cert valid until
+export const ANDROID_ENVIRONMENTS = {
+               // SSL cert valid until
     GERMANY_PROD:'https://api.wirecard.com', // 03/12/2020
     GERMANY_TEST:'https://api-test.wirecard.com', // 03/12/2020
     SINGAPORE_PROD:'https://api.wirecard.com.sg', // 05/21/2020
@@ -54,6 +54,19 @@ export const ENVIRONMENTS = {
     TORONTO_PROD:'https://engine.elastic-payments.com', // 08/27/2020
     TORONTO_TEST:'https://sandbox-engine.thesolution.com' // 12/01/2018
 
+}
+
+export const IOS_ENVIRONMENTS = {
+    WDECEnvironmentCEEPROD:'WDECEnvironmentCEEPROD',
+    WDECEnvironmentCEETEST:'WDECEnvironmentCEETEST',
+    WDECEnvironmentPROD:'WDECEnvironmentPROD',
+    WDECEnvironmentSingaporePROD:'WDECEnvironmentSingaporePROD',
+    WDECEnvironmentSingaporeTEST:'WDECEnvironmentSingaporeTEST',
+    WDECEnvironmentTEST:'WDECEnvironmentTEST',
+    WDECEnvironmentTorontoPROD:'WDECEnvironmentTorontoPROD',
+    WDECEnvironmentTorontoTEST:'WDECEnvironmentTorontoTEST',
+    WDECEnvironmentTotalNumber:'WDECEnvironmentTotalNumber',
+    WDECEnvironmentUndefined:'WDECEnvironmentUndefined',
 }
 
 export const CURRENCYS = {
