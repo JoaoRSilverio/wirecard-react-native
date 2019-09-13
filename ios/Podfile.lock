@@ -21,19 +21,19 @@ PODS:
   - CocoaLumberjack/Default (3.4.2)
   - CocoaLumberjack/Extensions (3.4.2):
     - CocoaLumberjack/Default
-  - GoogleMobileVision/Detector (1.5.0):
+  - GoogleMobileVision/Detector (1.6.0):
     - GoogleToolboxForMac/Logger (~> 2.1)
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - GTMSessionFetcher/Core (~> 1.1)
     - Protobuf (~> 3.1)
-  - GoogleMobileVision/TextDetector (1.5.0):
-    - GoogleMobileVision/Detector (~> 1.5)
-  - GoogleToolboxForMac/Defines (2.2.0)
-  - GoogleToolboxForMac/Logger (2.2.0):
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - GTMSessionFetcher/Core (1.2.1)
+  - GoogleMobileVision/TextDetector (1.6.0):
+    - GoogleMobileVision/Detector (~> 1.6)
+  - GoogleToolboxForMac/Defines (2.2.1)
+  - GoogleToolboxForMac/Logger (2.2.1):
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.1)":
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - GTMSessionFetcher/Core (1.2.2)
   - IBAN (1.0.0)
   - libextobjc/EXTScope (0.6):
     - libextobjc/RuntimeExtensions
@@ -43,9 +43,9 @@ PODS:
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
   - MBProgressHUD (1.1.0)
-  - paymentSDK/Alipay (3.2.0):
+  - paymentSDK/Alipay (3.6.0):
     - paymentSDK/Core
-  - paymentSDK/All (3.2.0):
+  - paymentSDK/All (3.6.0):
     - paymentSDK/Alipay
     - paymentSDK/ApplePay
     - paymentSDK/Card
@@ -56,42 +56,50 @@ PODS:
     - paymentSDK/IBANScanner
     - paymentSDK/IBANScannerGallery
     - paymentSDK/PayPal
+    - paymentSDK/PhotoGallery
+    - paymentSDK/Scanner
     - paymentSDK/SEPA
     - paymentSDK/ZAPP
-  - paymentSDK/ApplePay (3.2.0):
+  - paymentSDK/ApplePay (3.6.0):
     - paymentSDK/CoreCard
-  - paymentSDK/Card (3.2.0):
+  - paymentSDK/Card (3.6.0):
     - paymentSDK/CoreCard
-  - paymentSDK/CardScanner (3.2.0):
-    - GoogleMobileVision/TextDetector (~> 1.5.0)
-    - paymentSDK/Card
-  - paymentSDK/CardScannerGallery (3.2.0):
+  - paymentSDK/CardScanner (3.6.0):
+    - paymentSDK/Scanner
+  - paymentSDK/CardScannerGallery (3.6.0):
     - paymentSDK/CardScanner
-  - paymentSDK/Core (3.2.0):
+    - paymentSDK/PhotoGallery
+  - paymentSDK/Core (3.6.0):
     - AFNetworking (~> 3.2.1)
     - CMPopTipView (~> 2.3.2)
     - CocoaLumberjack (~> 3.4.2)
-    - libextobjc/EXTScope (~> 0.6)
+    - libextobjc/EXTScope (~> 0.6.0)
     - Lockbox (~> 3.0.6)
     - Mantle (~> 2.1.0)
     - MBProgressHUD (~> 1.1.0)
     - TPKeyboardAvoiding (~> 1.3.2)
-  - paymentSDK/CoreCard (3.2.0):
+  - paymentSDK/CoreCard (3.6.0):
     - paymentSDK/Core
-  - paymentSDK/IBANScanner (3.2.0):
-    - GoogleMobileVision/TextDetector (~> 1.5.0)
+  - paymentSDK/IBANScanner (3.6.0):
+    - paymentSDK/Scanner
     - paymentSDK/SEPA
-  - paymentSDK/IBANScannerGallery (3.2.0):
+  - paymentSDK/IBANScannerGallery (3.6.0):
     - paymentSDK/IBANScanner
-  - paymentSDK/PayPal (3.2.0):
+    - paymentSDK/PhotoGallery
+  - paymentSDK/PayPal (3.6.0):
     - paymentSDK/Core
-  - paymentSDK/SEPA (3.2.0):
+  - paymentSDK/PhotoGallery (3.6.0):
+    - paymentSDK/Core
+  - paymentSDK/Scanner (3.6.0):
+    - GoogleMobileVision/TextDetector (~> 1.6.0)
+    - paymentSDK/Card
+  - paymentSDK/SEPA (3.6.0):
     - IBAN (~> 1.0.0)
     - paymentSDK/Core
-  - paymentSDK/ZAPP (3.2.0):
+  - paymentSDK/ZAPP (3.6.0):
     - paymentSDK/Core
     - ZappMerchantLib (~> 1.1.2)
-  - Protobuf (3.7.0)
+  - Protobuf (3.9.0)
   - React (0.11.0):
     - React/Core (= 0.11.0)
   - React/Core (0.11.0)
@@ -99,7 +107,7 @@ PODS:
   - ZappMerchantLib (1.1.2)
 
 DEPENDENCIES:
-  - paymentSDK/All
+  - paymentSDK/All (~> 3.6.0)
   - React
 
 SPEC REPOS:
@@ -125,20 +133,20 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   CMPopTipView: 2d56ef53e8e739c4e63ad97a5a88b97712b46c7b
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
-  GoogleMobileVision: a1f93108b3527d67339e2de80e1db76645f9e8b9
-  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
-  GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
+  GoogleMobileVision: 31cfb4319fd0c03d80105680abd9eae9da5e3b47
+  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
+  GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   IBAN: 76b56f687c86323802ca6bddb2035e6c6ea3d9c9
   libextobjc: aed8b7d2b07f511c1a7ecaacb33ea03e327c69b7
   Lockbox: 4291a0b8b1aed35474881c4e592961dec3ca695e
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
-  paymentSDK: 2f6d1a6162b50279cd10ef49cc430ce0906ba0d8
-  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
+  paymentSDK: ed9a1137dccf41db1e3c3d82b9e5a7e9da2f2272
+  Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
   React: ab1a2e21deb34965c38328d5ec40cc7d12c6050a
   TPKeyboardAvoiding: cb69d5ddbe90ce0170e4bc2db1e5e41d4a3ad9a4
   ZappMerchantLib: 92ea0dde1a253f36211a7b7a655335ba19a4da74
 
-PODFILE CHECKSUM: 9091c428d309a708aa89a2e0963d96c0e82e9aba
+PODFILE CHECKSUM: 5beff702cf7b7af4e3c864970bc99f64bd654c69
 
 COCOAPODS: 1.5.0

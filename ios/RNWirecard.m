@@ -18,10 +18,9 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
 {
     NSLog(@"OBJ startin native module");
     @try{
-        self.client = [[WDECClient alloc] initWithEnvironment:WDECEnvironmentTEST];
+        self.client = [[WDECClient alloc] initWithEnvironment:[self parseEnvironment:environment]];
         onSuccess(@[[NSNull null]]);
     }
-    
     @catch(NSException * exception){
         onFailure(@[[NSNull null]]);
     }
@@ -34,6 +33,33 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
+}
+
+-(WDECEnvironment) parseEnvironment:(NSString *) environment{
+  -(WDECEnvironment) parseEnvironment:(NSString *) environment{
+    if([environment isEqualToString:@"undefined"]){
+        return WDECEnvironmentUndefined;
+    }else if( [environment isEqualToString:@"singaporeProd"] ){
+        return WDECEnvironmentSingaporePROD;
+    }else if([environment isEqualToString:@"generalProd"]){
+        return WDECEnvironmentPROD;
+    }else if([environment isEqualToString:@"germanyProd"]){
+        return WDECEnvironmentCEEPROD;
+    }else if([environment isEqualToString:@"germanyTest"]){
+        return WDECEnvironmentCEETEST;
+    }else if([environment isEqualToString:@"torontoProd"]){
+        return WDECEnvironmentTorontoPROD;
+    }else if([environment isEqualToString:@"generalTest"]){
+        return WDECEnvironmentTEST;
+    }else if([environment isEqualToString:@"singaporeTest"]){
+        return WDECEnvironmentSingaporeTEST;
+    }else if([environment isEqualToString:@"torontoTest"]){
+        return WDECEnvironmentTorontoTEST;
+    }else if([environment isEqualToString:@"totalNumber"]){
+        return WDECEnvironmentTotalNumber;
+    }
+    return WDECEnvironmentUndefined;
+}
 }
 
 RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
@@ -49,6 +75,11 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     [wcpayment setTransactionType : WDECTransactionTypePurchase];
     [wcpayment setMerchantAccountID:(NSString * _Nullable) payment[@"merchantAccountID"]];
     [wcpayment setRequestID : (NSString * _Nullable) payment[@"requestID"]];
+    [wcpayment setSignature:(NSString * _Nullable) payment[@"signature"]];
+    if([payment objectForKey:@"token"] != nil){
+        [wcpayment Card]
+    }
+    /*
     NSLog(@"OBJ converting fields to strings");
     NSString *requestIDStr = wcpayment.requestID;
     NSString *transactionTypeStr = WDECTransactionTypeGetCode(wcpayment.transactionType) ?: @"";
@@ -61,7 +92,9 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     NSDate *requestTimestamp = [NSDate date]; // UTC
     NSString *requestTimestampStr = [[NSDateFormatter timestampDateFormatter] stringFromDate:requestTimestamp];
     NSLog(@"OBJ creating signature ",wcpayment.merchantAccountID);
-    
+    */
+    /*
+     
     wcpayment.signature = [self
                          serverSideSignatureCalculationV2:requestTimestampStr
                          requestID:requestIDStr
@@ -71,7 +104,8 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                          currency:currencyStr
                          IPAddress:IPAddressStr
                          secretKey:@"9e0130f6-2e1e-4185-b0d5-dc69079c75cc"];
-    NSLog(@"OBJ right before call %@",wcpayment);
+    */
+   // NSLog(@"OBJ right before call %@",wcpayment);
     if(self.client){
         @weakify(self);
         [self.client makePayment:(WDECPayment*)wcpayment withCompletion:^(WDECPaymentResponse * _Nullable response,
@@ -97,8 +131,14 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
 
 - (WDECPayment*)createPayment:(NSString *) title {
     WDECPayment *result = nil;
-    if([title isEqualToString:title]){
+    if([title isEqualToString:@"card"]){
         result = [self createCardPayment];
+    }else if([title isEqualToString:@"apple_pay"]){
+        //result = [self createApplePayment];
+    }else if([title isEqualToString:@"paypal"]){
+        //result = [self createPayPalPayment];
+    }else if([title isEqualToString:@"sepa"]){
+        //result = [self createSepaPayment];
     }
     
     return result;
@@ -107,10 +147,10 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
 - (WDECPayment *) createCardPayment
 {
     WDECCardPayment *payment = [WDECCardPayment new];
-    
     return payment;
 }
 /// SERVER SIDE CODE
+/*
 - (NSString *)serverSideSignatureCalculationV2:(NSString *)requestTimestamp
                                      requestID:(NSString *)requestID
                                     merchantID:(NSString *)merchantID
@@ -157,5 +197,6 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     NSString *HMAC  = [rawHMAC base64EncodedStringWithOptions:0];
     return HMAC;
 }
+*/
 @end
   

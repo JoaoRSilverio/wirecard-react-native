@@ -10,6 +10,7 @@
 		953BCB0C2241202C009D3D4F /* RNWirecard.h in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5881CC2AC0600A0062D /* RNWirecard.h */; };
 		953BCB0F22412957009D3D4F /* NSDateFormatter+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 953BCB0E22412957009D3D4F /* NSDateFormatter+Utils.m */; };
 		B3E7B58A1CC2AC0600A0062D /* RNWirecard.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNWirecard.m */; };
+		D392CD597C6A8E3E966CE232 /* libPods-RNWirecard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 953BCB0A22411FD9009D3D4F /* libPods-RNWirecard.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +36,8 @@
 		A4B9561A5FDFABBF9D94179F /* Pods-RNWirecard.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNWirecard.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNWirecard/Pods-RNWirecard.debug.xcconfig"; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* RNWirecard.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = RNWirecard.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* RNWirecard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNWirecard.m; sourceTree = "<group>"; };
+		B93D660AA5FDA27CBAF4D6BE /* Pods-RNWirecard.kussbusrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNWirecard.kussbusrelease.xcconfig"; path = "Pods/Target Support Files/Pods-RNWirecard/Pods-RNWirecard.kussbusrelease.xcconfig"; sourceTree = "<group>"; };
+		C9033869E78FEF39762D4E4D /* Pods-RNWirecard.kussbusdebug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNWirecard.kussbusdebug.xcconfig"; path = "Pods/Target Support Files/Pods-RNWirecard/Pods-RNWirecard.kussbusdebug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D392CD597C6A8E3E966CE232 /* libPods-RNWirecard.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +78,8 @@
 			children = (
 				A4B9561A5FDFABBF9D94179F /* Pods-RNWirecard.debug.xcconfig */,
 				64CA69811F8BBD68C884F3BF /* Pods-RNWirecard.release.xcconfig */,
+				C9033869E78FEF39762D4E4D /* Pods-RNWirecard.kussbusdebug.xcconfig */,
+				B93D660AA5FDA27CBAF4D6BE /* Pods-RNWirecard.kussbusrelease.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -169,13 +175,14 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-RNWirecard/Pods-RNWirecard-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleMobileVision/GoogleMVTextDetectorResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ZappMerchantLib/ZappMerchantLibResources.bundle",
-				"${PODS_ROOT}/paymentSDK/WDeComCard.framework/WDeComCard.bundle",
-				"${PODS_ROOT}/paymentSDK/WDeComCardScanner.framework/WDeComCardScanner.bundle",
-				"${PODS_ROOT}/paymentSDK/WDeComCardScannerGallery.framework/WDeComCardScannerGallery.bundle",
-				"${PODS_ROOT}/paymentSDK/WDeCom.framework/WDeCom.bundle",
-				"${PODS_ROOT}/paymentSDK/WDeComIBANScanner.framework/WDeComIBANScanner.bundle",
-				"${PODS_ROOT}/paymentSDK/WDeComIBANScannerGallery.framework/WDeComIBANScannerGallery.bundle",
-				"${PODS_ROOT}/paymentSDK/WDeComSEPA.framework/WDeComSEPA.bundle",
+				"${PODS_ROOT}/paymentSDK/eCom/WDeComCard.framework/WDeComCard.bundle",
+				"${PODS_ROOT}/paymentSDK/eCom/WDeComCardScanner.framework/WDeComCardScanner.bundle",
+				"${PODS_ROOT}/paymentSDK/eCom/WDeComCardScannerGallery.framework/WDeComCardScannerGallery.bundle",
+				"${PODS_ROOT}/paymentSDK/eCom/WDeCom.framework/WDeCom.bundle",
+				"${PODS_ROOT}/paymentSDK/eCom/WDeComIBANScanner.framework/WDeComIBANScanner.bundle",
+				"${PODS_ROOT}/paymentSDK/eCom/WDeComIBANScannerGallery.framework/WDeComIBANScannerGallery.bundle",
+				"${PODS_ROOT}/paymentSDK/eCom/WDeComSEPA.framework/WDeComSEPA.bundle",
+				"${PODS_ROOT}/paymentSDK/eCom/WDeComScanner.framework/WDeComScanner.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
@@ -188,6 +195,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/WDeComIBANScanner.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/WDeComIBANScannerGallery.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/WDeComSEPA.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/WDeComScanner.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -373,7 +381,7 @@
 		};
 		953BCB6522412F5A009D3D4F /* KussbusDebug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A4B9561A5FDFABBF9D94179F /* Pods-RNWirecard.debug.xcconfig */;
+			baseConfigurationReference = C9033869E78FEF39762D4E4D /* Pods-RNWirecard.kussbusdebug.xcconfig */;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -428,7 +436,7 @@
 		};
 		953BCB6722412F5D009D3D4F /* KussbusRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 64CA69811F8BBD68C884F3BF /* Pods-RNWirecard.release.xcconfig */;
+			baseConfigurationReference = B93D660AA5FDA27CBAF4D6BE /* Pods-RNWirecard.kussbusrelease.xcconfig */;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

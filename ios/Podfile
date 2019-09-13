@@ -6,6 +6,6 @@ target 'RNWirecard' do
   # use_frameworks!
 
   # Pods for RNWirecard
-  pod 'paymentSDK/All'
+  pod 'paymentSDK/All', '~>3.6.0'
   pod 'React'
 end
