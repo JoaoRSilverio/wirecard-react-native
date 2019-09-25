@@ -1,5 +1,7 @@
  // @ts-ignore
 import {NativeModules} from 'react-native';
+var RNWirecard = NativeModules.RNWirecard;
+
 
 export const TRANSACTION_TYPES ={
     AUTHORIZATION:'authorization',
@@ -112,13 +114,13 @@ export interface IRNWirecardCcPayment {
 
 export default class ReactNativeWirecard{
     public static initiateClient(onSuccess:()=>{},onFailure:()=>{},enviroment:string){
-        NativeModules.RNWirecard.initiateClient(enviroment,onSuccess,onFailure);
+        RNWirecard.initiateClient(enviroment,onSuccess,onFailure);
     }
     public static testBridge(message:string){
-        NativeModules.RNWirecard.testBridge(message);
+        RNWirecard.testBridge(message);
     }
     public static pay( onSuccess:()=>{},onFailure:()=>{},payment:IRNWirecardCcPayment){
-           NativeModules.RNWirecard.newPaymentRequest(
+           RNWirecard.newPaymentRequest(
                 payment,
                 onSuccess,
                 onFailure, 
