@@ -10,11 +10,13 @@ Pod::Spec.new do |s|
   s.author       = "Joao.r.silverio@gmail.com"
   s.platform     = :ios, "9.0"
   s.source       = { :git => "https://github.com/author/RNWirecard.git", :tag => "master" }
-  s.source_files  = "RNWirecard/**/*.{h,m}"
+  s.source_files  = "*.{h,m}"
+  s.static_framework = true
   s.requires_arc = true
 
 
-  s.dependency "paymentSDK/All"
+  s.dependency 'paymentSDK/All'
+  s.dependency 'React'
   #s.dependency "others"
 
 end

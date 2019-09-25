@@ -18,7 +18,7 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
 {
     NSLog(@"OBJ startin native module");
     @try{
-        self.client = [[WDECClient alloc] initWithEnvironment:[self parseEnvironment:environment]];
+        self.client = [[WDECClient alloc] initWithEnvironment:WDECEnvironmentCEETEST];
         onSuccess(@[[NSNull null]]);
     }
     @catch(NSException * exception){
@@ -35,7 +35,6 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
     return dispatch_get_main_queue();
 }
 
--(WDECEnvironment) parseEnvironment:(NSString *) environment{
   -(WDECEnvironment) parseEnvironment:(NSString *) environment{
     if([environment isEqualToString:@"undefined"]){
         return WDECEnvironmentUndefined;
@@ -60,7 +59,7 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
     }
     return WDECEnvironmentUndefined;
 }
-}
+
 
 RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                   onPaymentSuccessfull:(RCTResponseSenderBlock) onSuccess
@@ -77,7 +76,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     [wcpayment setRequestID : (NSString * _Nullable) payment[@"requestID"]];
     [wcpayment setSignature:(NSString * _Nullable) payment[@"signature"]];
     if([payment objectForKey:@"token"] != nil){
-        [wcpayment Card]
+        //[wcpayment Card]
     }
     /*
     NSLog(@"OBJ converting fields to strings");
