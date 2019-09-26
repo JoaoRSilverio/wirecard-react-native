@@ -102,14 +102,15 @@ export const CURRENCYS = {
 
 
 export interface IRNWirecardCcPayment {
-    amount:string,
-    paymentMethod:string,
-    currency:string,
-    requestID:string,
-    merchantID:string,
-    signature:string,
-    token?:string,
-    maskedAccountNumber?:string,
+    amount:string;
+    paymentMethod:string;
+    currency:string;
+    requestID:string;
+    merchantID:string;
+    signature:string;
+    token?:string;
+    maskedAccountNumber?:string;
+    notificationUrl?: string;
 }
 
 export default class ReactNativeWirecard{
