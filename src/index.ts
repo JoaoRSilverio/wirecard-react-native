@@ -59,16 +59,16 @@ export const ANDROID_ENVIRONMENTS = {
 }
 
 export const IOS_ENVIRONMENTS = {
-    WDECEnvironmentCEEPROD:'WDECEnvironmentCEEPROD',
-    WDECEnvironmentCEETEST:'WDECEnvironmentCEETEST',
-    WDECEnvironmentPROD:'WDECEnvironmentPROD',
-    WDECEnvironmentSingaporePROD:'WDECEnvironmentSingaporePROD',
-    WDECEnvironmentSingaporeTEST:'WDECEnvironmentSingaporeTEST',
-    WDECEnvironmentTEST:'WDECEnvironmentTEST',
-    WDECEnvironmentTorontoPROD:'WDECEnvironmentTorontoPROD',
-    WDECEnvironmentTorontoTEST:'WDECEnvironmentTorontoTEST',
-    WDECEnvironmentTotalNumber:'WDECEnvironmentTotalNumber',
-    WDECEnvironmentUndefined:'WDECEnvironmentUndefined',
+    WDECEnvironmentCEEPROD: 'germanyProd',
+    WDECEnvironmentCEETEST: 'germanyTest',
+    WDECEnvironmentPROD: 'generalProd',
+    WDECEnvironmentSingaporePROD: 'singaporeProd',
+    WDECEnvironmentSingaporeTEST: 'singaporeTest',
+    WDECEnvironmentTEST: 'generalTest',
+    WDECEnvironmentTorontoPROD: 'torontoProd',
+    WDECEnvironmentTorontoTEST: 'torontoTest',
+    WDECEnvironmentTotalNumber: 'totalNumber',
+    WDECEnvironmentUndefined: 'undefined',
 }
 
 export const CURRENCYS = {

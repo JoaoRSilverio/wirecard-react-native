@@ -1,4 +1,3 @@
-
 #import "RNWirecard.h"
 #import <WDeCom/WDeCom.h>
 #import <WdeComCard/WDeComCard.h>
@@ -14,15 +13,17 @@ RCT_EXPORT_MODULE()
 
 
 
-RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseSenderBlock)onSuccess onFailure:(RCTResponseSenderBlock)onFailure)
+RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseSenderBlock)onSuccess 
+onFailure:(RCTResponseSenderBlock)onFailure
+)
 {
     NSLog(@"OBJ startin native module");
     @try{
-        self.client = [[WDECClient alloc] initWithEnvironment:WDECEnvironmentCEETEST];
+        self.client = [[WDECClient alloc] initWithEnvironment:[self parseEnvironment:environment]];
         onSuccess(@[[NSNull null]]);
     }
     @catch(NSException * exception){
-        onFailure(@[[NSNull null]]);
+       onFailure(@[[NSNull null]]);
     }
     @finally{
         
@@ -37,18 +38,22 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
 
   -(WDECEnvironment) parseEnvironment:(NSString *) environment{
     if([environment isEqualToString:@"undefined"]){
+        NSLog(@"setting WDECEnvironmentUndefined");
         return WDECEnvironmentUndefined;
     }else if( [environment isEqualToString:@"singaporeProd"] ){
         return WDECEnvironmentSingaporePROD;
     }else if([environment isEqualToString:@"generalProd"]){
         return WDECEnvironmentPROD;
     }else if([environment isEqualToString:@"germanyProd"]){
+        NSLog(@"setting WDECEnvironmentCEEPROD");
         return WDECEnvironmentCEEPROD;
     }else if([environment isEqualToString:@"germanyTest"]){
+        NSLog(@"setting WDECEnvironmentCEETEST");
         return WDECEnvironmentCEETEST;
     }else if([environment isEqualToString:@"torontoProd"]){
         return WDECEnvironmentTorontoPROD;
     }else if([environment isEqualToString:@"generalTest"]){
+        NSLog(@"setting WDECEnvironmentTEST");
         return WDECEnvironmentTEST;
     }else if([environment isEqualToString:@"singaporeTest"]){
         return WDECEnvironmentSingaporeTEST;
@@ -56,28 +61,28 @@ RCT_EXPORT_METHOD(initiateClient:(NSString*) environment onSuccess:(RCTResponseS
         return WDECEnvironmentTorontoTEST;
     }else if([environment isEqualToString:@"totalNumber"]){
         return WDECEnvironmentTotalNumber;
-    }
+    } else{
     return WDECEnvironmentUndefined;
+    }
 }
 
 
 RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                   onPaymentSuccessfull:(RCTResponseSenderBlock) onSuccess
-                  onPaymentFailed:(RCTResponseSenderBlock) onFailure){
-    NSLog(@"OBJ creating payment instance");
-    WDECPayment * wcpayment = [self createPayment:payment[@"paymentMethod"]];
-    NSLog(@"OBJ creating populating fields");
+                  onPaymentFailed:(RCTResponseSenderBlock) onFailure
+                  ){
+    WDECPayment * wcpayment = [self createPayment:payment[@"paymentMethod"] paymentData:payment];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss'Z'";
+    NSDate *timeStamp = [formatter dateFromString:payment[@"requestTimeStamp"]];
+    [wcpayment setRequestTimestamp: timeStamp];
+    if([payment objectForKey:@"notificationUrl"] != nil){
+        WDECNotification *notification = [WDECNotification new];
+        notification.URL = [NSURL URLWithString:payment[@"notificationUrl"]];
+        wcpayment.notifications = @[notification];
+    }
     self.onPaymentFailed = onFailure;
     self.onPaymentSuccessfull = onSuccess;
-    [wcpayment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber decimalNumberWithString: payment[@"amount"]]];
-    [wcpayment setCurrency:(NSString * _Nullable) payment[@"currency"]];
-    [wcpayment setTransactionType : WDECTransactionTypePurchase];
-    [wcpayment setMerchantAccountID:(NSString * _Nullable) payment[@"merchantAccountID"]];
-    [wcpayment setRequestID : (NSString * _Nullable) payment[@"requestID"]];
-    [wcpayment setSignature:(NSString * _Nullable) payment[@"signature"]];
-    if([payment objectForKey:@"token"] != nil){
-        //[wcpayment Card]
-    }
     /*
     NSLog(@"OBJ converting fields to strings");
     NSString *requestIDStr = wcpayment.requestID;
@@ -86,13 +91,11 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     NSString *currencyStr = wcpayment.currency ?: @"";
     NSString *IPAddressStr = wcpayment.IPAddress;
     NSString *merchantAccount = wcpayment.merchantAccountID;
-    
-    
     NSDate *requestTimestamp = [NSDate date]; // UTC
     NSString *requestTimestampStr = [[NSDateFormatter timestampDateFormatter] stringFromDate:requestTimestamp];
-    NSLog(@"OBJ creating signature ",wcpayment.merchantAccountID);
-    */
-    /*
+    NSLog(@"OBJ creating signature account id %@",wcpayment.merchantAccountID);
+    NSLog(@"OBJ creating signature account secret %@",@"9e0130f6-2e1e-4185-b0d5-dc69079c75cc");
+    
      
     wcpayment.signature = [self
                          serverSideSignatureCalculationV2:requestTimestampStr
@@ -102,7 +105,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                          amount:amountStr
                          currency:currencyStr
                          IPAddress:IPAddressStr
-                         secretKey:@"9e0130f6-2e1e-4185-b0d5-dc69079c75cc"];
+                         secretKey:@"b3b131ad-ea7e-48bc-9e71-78d0c6ea579d"];
     */
    // NSLog(@"OBJ right before call %@",wcpayment);
     if(self.client){
@@ -111,27 +114,49 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                                                                         NSError * _Nullable error)
          {
              @strongify(self);
-             NSLog(@"inside the block %@",wcpayment);
              NSMutableArray * events = [NSMutableArray array];
              if(error){
-                 NSLog(@"error ",error.localizedDescription);
                  [events addObject:@"error while paying"];
                  self.onPaymentFailed(@[[NSNull null], events]);
-             }else{
-                 
-                 [events addObject:@"Payment Successfull"];
-                 self.onPaymentSuccessfull(@[[NSNull null], events]);
+             }else if(response){
+                 NSString *transactionState= [self getTransactionStateString: response.transactionState];
+                 [events addObject:response.statusMessage];
+                 self.onPaymentSuccessfull(@[[NSNull null], events, transactionState]);
              }
          }];
     }else{
         NSLog(@"no client initiated");
     }
 }
-
-- (WDECPayment*)createPayment:(NSString *) title {
+- (NSString *) getTransactionStateString:(WDECTransactionState) state {
+    switch ((int)state) {
+            case (int)WDECTransactionStateFailed:
+            return @"WDECTransactionStateFailed";
+            break;
+            case (int)WDECTransactionStateSuccess:
+            return @"WDECTransactionStateSuccess";
+            break;
+            case (int)WDECTransactionStateInProgress:
+            return @"WDECTransactionStateInProgress";
+            break;
+            case (int)WDECTransactionStateRepeated:
+            return @"WDECTransactionStateRepeated";
+            break;
+            case (int)WDECTransactionStateTotalNumber:
+            return @"WDECTransactionStateTotalNumber";
+            break;
+            case (int)WDECTransactionStateUndefined:
+            return @"WDECTransactionStateUndefined";
+            break;
+        default:
+            return @"WDECTransactionStateUndefined";
+            break;
+    }
+}
+- (WDECPayment*)createPayment:(NSString *) title paymentData:(NSDictionary *) paymentData {
     WDECPayment *result = nil;
     if([title isEqualToString:@"card"]){
-        result = [self createCardPayment];
+        result = [self createCardPayment: paymentData];
     }else if([title isEqualToString:@"apple_pay"]){
         //result = [self createApplePayment];
     }else if([title isEqualToString:@"paypal"]){
@@ -143,12 +168,24 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     return result;
 }
 
-- (WDECPayment *) createCardPayment
+- (WDECPayment *) createCardPayment:(NSDictionary *) paymentData
 {
-    WDECCardPayment *payment = [WDECCardPayment new];
-    return payment;
+    WDECCardPayment *cardPayment = [WDECCardPayment new];
+    [cardPayment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber decimalNumberWithString: paymentData[@"amount"]]];
+    [cardPayment setCurrency:(NSString * _Nullable) paymentData[@"currency"]];
+    [cardPayment setTransactionType : WDECTransactionTypePurchase];
+    [cardPayment setMerchantAccountID:(NSString * _Nullable) paymentData[@"merchantID"]];
+    [cardPayment setRequestID : (NSString * _Nullable) paymentData[@"requestID"]];
+    [cardPayment setSignature:(NSString * _Nullable) paymentData[@"signature"]];
+    if([paymentData objectForKey:@"token"] != nil){
+        WDECCardToken *cardToken = [WDECCardToken new];
+        cardToken.tokenID =  paymentData[@"token"];
+        cardPayment.token = cardToken;
+        cardPayment.requireSecurityCode = true;
+    }
+    return cardPayment;
 }
-/// SERVER SIDE CODE
+/// SIMULATED SERVER SIDE CODE
 /*
 - (NSString *)serverSideSignatureCalculationV2:(NSString *)requestTimestamp
                                      requestID:(NSString *)requestID
@@ -197,5 +234,6 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     return HMAC;
 }
 */
+
 @end
   
