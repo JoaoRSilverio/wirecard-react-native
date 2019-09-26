@@ -106,7 +106,7 @@ export interface IRNWirecardCcPayment {
     paymentMethod:string,
     currency:string,
     requestID:string,
-    merchantAccountID:string,
+    merchantID:string,
     signature:string,
     token?:string,
     maskedAccountNumber?:string,
