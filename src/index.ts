@@ -117,10 +117,7 @@ export default class ReactNativeWirecard{
     public static initiateClient(onSuccess:()=>{},onFailure:()=>{},enviroment:string){
         RNWirecard.initiateClient(enviroment,onSuccess,onFailure);
     }
-    public static testBridge(message:string){
-        RNWirecard.testBridge(message);
-    }
-    public static pay( onSuccess:()=>{},onFailure:()=>{},payment:IRNWirecardCcPayment){
+    public static pay( onSuccess:()=>void,onFailure:()=>void,payment:IRNWirecardCcPayment){
            RNWirecard.newPaymentRequest(
                 payment,
                 onSuccess,
