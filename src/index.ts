@@ -114,10 +114,16 @@ export interface IRNWirecardCcPayment {
 }
 
 export default class ReactNativeWirecard{
-    public static initiateClient(onSuccess:()=>{},onFailure:()=>{},enviroment:string){
+    public static initiateClient(
+        onSuccess:()=> void,
+        onFailure:()=> void,
+        enviroment:string){
         RNWirecard.initiateClient(enviroment,onSuccess,onFailure);
     }
-    public static pay( onSuccess:()=>void,onFailure:()=>void,payment:IRNWirecardCcPayment){
+    public static pay( 
+        onSuccess: (error: any, events: any, transactionState: any) => void,
+        onFailure: (error: any, events: any, transactionState: any) => void,
+        payment:IRNWirecardCcPayment){
            RNWirecard.newPaymentRequest(
                 payment,
                 onSuccess,
