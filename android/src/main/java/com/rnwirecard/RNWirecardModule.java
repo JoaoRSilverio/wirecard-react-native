@@ -45,6 +45,7 @@ import com.wirecard.ecom.model.Payment;
 import com.wirecard.ecom.model.TransactionType;
 import com.wirecard.ecom.model.TransactionState;
 import com.wirecard.ecom.model.out.PaymentResponse;
+import com.wirecard.ecom.ResponseCode;
 import com.wirecard.ecom.card.model.CardPayment;
 
 public class RNWirecardModule extends ReactContextBaseJavaModule implements ActivityEventListener {
@@ -134,10 +135,11 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
     //.setTransactionType(paymentInfo.getString("transactionType"))
     public CardPayment createCardPayment(ReadableMap paymentInfo){
        
+        /*
         String signature = this.generateSignatureV2(
             paymentInfo.getString("requestTimeStamp"), paymentInfo.getString("requestID"),
             paymentInfo.getString("merchantID"), paymentInfo.getString("amount"));
-        
+        */
         CardPayment wirecardPayment = new CardPayment.Builder()
                 .setSignature(paymentInfo.getString("signature"))
                 .setMerchantAccountId(paymentInfo.getString("merchantID"))
@@ -181,7 +183,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         Log.i("wirecard-react-native","server sent:");
         Log.i("wirecard-react-native",paymentInfo.getString("signature"));
         Log.i("wirecard-react-native","generated:");
-        Log.i("wirecard-react-native",signature);
+        //Log.i("wirecard-react-native",signature);
         Log.i("wirecard-react-native",paymentInfo.getString("amount"));
         Log.i("wirecard-react-native",paymentInfo.getString("currency"));
         Log.i("wirecard-react-native","lauching screen");
@@ -212,17 +214,28 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
 
     public void responseHelper(
         PaymentResponse paymentResponse,
-        ReactApplicationContext context){
-        if(paymentResponse.getErrorMessage()  != null){
+        ReactApplicationContext context) {
+        if (paymentResponse.getErrorMessage() != null) {
             WritableMap wresp = this.getWCRNPaymentResponse(paymentResponse);
-            this.onPaymentFailure.invoke(wresp);
+            this.onPaymentFailure.invoke(
+                paymentResponse.getErrorMessage(),
+                wresp.getString("cardToken"),
+                wresp.getString("transactionState"),
+                wresp.getString("transactionId"),
+                wresp.getString("requestId"));
         }
-        if(paymentResponse.getPayment() != null && paymentResponse.getPayment().getStatuses() != null){
-            WritableMap wresp =  this.getWCRNPaymentResponse(paymentResponse);
-            this.onPaymentSuccess.invoke(wresp);
+        if (paymentResponse.getPayment() != null && paymentResponse.getPayment().getStatuses() != null) {
+            WritableMap wresp = this.getWCRNPaymentResponse(paymentResponse);
+            this.onPaymentSuccess.invoke(
+                paymentResponse.getErrorMessage(),
+                wresp.getString("cardToken"),
+                wresp.getString("transactionState"),
+                wresp.getString("transactionId"),
+                wresp.getString("requestId"));
         }
-       
+
     }
+   
     private WritableMap getWCRNPaymentResponse(PaymentResponse paymentResponse) {
         StringBuilder sb = new StringBuilder();
         sb.append("Response code: ").append(paymentResponse.getResponseCode());
@@ -240,13 +253,16 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         String transactionId = "no payment";
         String requestId = "no request id";
         String cardToken = "no card token";
+        String transactionState = " unknown transaction state";
         if(paymentResponse.getPayment() != null) {
             Payment payment = paymentResponse.getPayment();
+            transactionState = payment.getTransactionState();
             transactionId = payment.getTransactionId();
             requestId = payment.getRequestId();
             cardToken = payment.getCardToken().getTokenId();
         }
         WritableMap wresp = new WritableNativeMap();
+        wresp.putString("transactionState",transactionState);
         wresp.putString("transactionId",transactionId);
         wresp.putString("status", sb.toString());
         wresp.putString("requestId",requestId);
@@ -257,6 +273,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         BigDecimal parsedAmount =new BigDecimal(amount).setScale(0, RoundingMode.HALF_EVEN);
         return parsedAmount;
     }
+
 
     /**
      *  ALL THIS METHODS ARE ONLY FOR TESTING IMPLEMENTATION
