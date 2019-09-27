@@ -84,6 +84,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     self.onPaymentFailed = onFailure;
     self.onPaymentSuccessfull = onSuccess;
     /*
+    NSLog(@"server sent signature %@",wcpayment.signature);
     NSLog(@"OBJ converting fields to strings");
     NSString *requestIDStr = wcpayment.requestID;
     NSString *transactionTypeStr = WDECTransactionTypeGetCode(wcpayment.transactionType) ?: @"";
@@ -92,11 +93,11 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     NSString *IPAddressStr = wcpayment.IPAddress;
     NSString *merchantAccount = wcpayment.merchantAccountID;
     NSDate *requestTimestamp = [NSDate date]; // UTC
-    NSString *requestTimestampStr = [[NSDateFormatter timestampDateFormatter] stringFromDate:requestTimestamp];
+    NSString *requestTimestampStr = payment[@"requestTimeStamp"];
     NSLog(@"OBJ creating signature account id %@",wcpayment.merchantAccountID);
-    NSLog(@"OBJ creating signature account secret %@",@"9e0130f6-2e1e-4185-b0d5-dc69079c75cc");
+    NSLog(@"OBJ creating signature account secret %@",@"b3b131ad-ea7e-48bc-9e71-78d0c6ea579d");
     
-     
+    
     wcpayment.signature = [self
                          serverSideSignatureCalculationV2:requestTimestampStr
                          requestID:requestIDStr
@@ -108,20 +109,31 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                          secretKey:@"b3b131ad-ea7e-48bc-9e71-78d0c6ea579d"];
     */
    // NSLog(@"OBJ right before call %@",wcpayment);
+    // [self logPayment:wcpayment];
     if(self.client){
         @weakify(self);
-        [self.client makePayment:(WDECPayment*)wcpayment withCompletion:^(WDECPaymentResponse * _Nullable response,
-                                                                        NSError * _Nullable error)
+        [self.client makePayment:
+            (WDECPayment*)wcpayment
+            withCompletion:^(WDECPaymentResponse * _Nullable response,NSError * _Nullable error)
          {
              @strongify(self);
              NSMutableArray * events = [NSMutableArray array];
+             NSString *transactionState= [self getTransactionStateString: response.transactionState];
              if(error){
-                 [events addObject:@"error while paying"];
-                 self.onPaymentFailed(@[[NSNull null], events]);
+                 self.onPaymentFailed(@[
+                                        error.description,
+                                        [NSNull null],
+                                        transactionState,
+                                        response.transactionIdentifier,
+                                        response.requestID]);
              }else if(response){
-                 NSString *transactionState= [self getTransactionStateString: response.transactionState];
-                 [events addObject:response.statusMessage];
-                 self.onPaymentSuccessfull(@[[NSNull null], events, transactionState]);
+                  WDECCardPaymentResponse *cardResponse = (WDECCardPaymentResponse *) response;
+                 self.onPaymentSuccessfull(@[
+                                             [NSNull null],
+                                             cardResponse.cardToken.tokenID,
+                                             transactionState,
+                                             response.transactionIdentifier,
+                                             response.requestID]);
              }
          }];
     }else{
@@ -154,6 +166,9 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     }
 }
 - (WDECPayment*)createPayment:(NSString *) title paymentData:(NSDictionary *) paymentData {
+    if(paymentData == nil){
+        NSLog(@"no payment data from js");
+    }
     WDECPayment *result = nil;
     if([title isEqualToString:@"card"]){
         result = [self createCardPayment: paymentData];
@@ -184,6 +199,16 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
         cardPayment.requireSecurityCode = true;
     }
     return cardPayment;
+}
+- (void) logPayment: (WDECPayment *) payment{
+    NSLog(@"Payment -> ");
+    NSLog(@"PAYMENT.AMOUNT %@", payment.amount);
+    NSLog(@"PAYMENT.CURRENCY %@", payment.currency);
+    // NSLog(@"PAYMENT.TRANSACTIONTYPE %@", payment.transactionType);
+    NSLog(@"PAYMENT.MERCHACCOUNTID %@", payment.merchantAccountID);
+    NSLog(@"PAYMENT.REQUESTID %@", payment.requestID);
+    NSLog(@"PAYMENT.SIGNATURE %@", payment.signature);
+    //NSLog(@"PAYMENT.TOKEN C%", payment.token);
 }
 /// SIMULATED SERVER SIDE CODE
 /*
@@ -233,7 +258,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     NSString *HMAC  = [rawHMAC base64EncodedStringWithOptions:0];
     return HMAC;
 }
-*/
 
+*/
 @end
   
