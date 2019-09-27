@@ -121,8 +121,18 @@ export default class ReactNativeWirecard{
         RNWirecard.initiateClient(enviroment,onSuccess,onFailure);
     }
     public static pay( 
-        onSuccess: (error: any, events: any, transactionState: any) => void,
-        onFailure: (error: any, events: any, transactionState: any) => void,
+        onSuccess: (
+            error: any,
+            tokenId: any,
+            transactionState: any,
+            transactionId: any,
+            requestId: any) => void,
+        onFailure: (
+            error: any,
+            tokenId: any,
+            transactionState: any,
+            transactionId: any,
+            requestId: any) => void,
         payment:IRNWirecardCcPayment){
            RNWirecard.newPaymentRequest(
                 payment,
