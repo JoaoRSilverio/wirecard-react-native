@@ -60,7 +60,7 @@ export const ANDROID_ENVIRONMENTS = {
 
 export const IOS_ENVIRONMENTS = {
     GERMANY_PROD: 'germanyProd',
-    GERMANY_TEST: 'germanyTest',
+    GERMANY_TEST: 'generalTest', //'germanyTest' doesnt work dont know why
     SINGAPORE_PROD: 'singaporeProd',
     SINGAPORE_TEST: 'singaporeTest',
     TORONTO_PROD: 'torontoProd',

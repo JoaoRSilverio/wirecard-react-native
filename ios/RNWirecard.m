@@ -117,15 +117,16 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
             withCompletion:^(WDECPaymentResponse * _Nullable response,NSError * _Nullable error)
          {
              @strongify(self);
-             NSMutableArray * events = [NSMutableArray array];
              NSString *transactionState= [self getTransactionStateString: response.transactionState];
+             NSString * transactionId = response.transactionIdentifier ? response.transactionIdentifier : @"no transaction id ";
+             NSString * requestId = response.requestID ? response.requestID : @"no request id";
              if(error){
                  self.onPaymentFailed(@[
                                         error.description,
                                         [NSNull null],
                                         transactionState,
-                                        response.transactionIdentifier,
-                                        response.requestID]);
+                                        transactionId,
+                                        requestId]);
              }else if(response){
                   WDECCardPaymentResponse *cardResponse = (WDECCardPaymentResponse *) response;
                  self.onPaymentSuccessfull(@[
