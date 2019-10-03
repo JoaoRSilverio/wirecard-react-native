@@ -46,7 +46,7 @@ export const PAYMENT_METHODS = {
         }
     }
 }
-
+// Environments defined according to this page https://doc.wirecard.com/MobilePaymentSDK_FirstSteps.html
 export const ANDROID_ENVIRONMENTS = {
                // SSL cert valid until
     GERMANY_PROD:'https://api.wirecard.com', // 03/12/2020
@@ -59,16 +59,16 @@ export const ANDROID_ENVIRONMENTS = {
 }
 
 export const IOS_ENVIRONMENTS = {
-    WDECEnvironmentCEEPROD: 'germanyProd',
-    WDECEnvironmentCEETEST: 'germanyTest',
-    WDECEnvironmentPROD: 'generalProd',
-    WDECEnvironmentSingaporePROD: 'singaporeProd',
-    WDECEnvironmentSingaporeTEST: 'singaporeTest',
-    WDECEnvironmentTEST: 'generalTest',
-    WDECEnvironmentTorontoPROD: 'torontoProd',
-    WDECEnvironmentTorontoTEST: 'torontoTest',
-    WDECEnvironmentTotalNumber: 'totalNumber',
-    WDECEnvironmentUndefined: 'undefined',
+    GERMANY_PROD: 'germanyProd',
+    GERMANY_TEST: 'germanyTest',
+    SINGAPORE_PROD: 'singaporeProd',
+    SINGAPORE_TEST: 'singaporeTest',
+    TORONTO_PROD: 'torontoProd',
+    TORONTO_TEST: 'torontoTest',
+     // WDECEnvironmentPROD: 'generalProd',
+    // WDECEnvironmentTEST: 'generalTest',
+    // WDECEnvironmentTotalNumber: 'totalNumber',
+    // WDECEnvironmentUndefined: 'undefined',
 }
 
 export const CURRENCYS = {
