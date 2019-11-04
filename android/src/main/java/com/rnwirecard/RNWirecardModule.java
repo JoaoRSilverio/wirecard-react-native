@@ -39,7 +39,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.wirecard.ecom.model.Status;
 import com.wirecard.ecom.Client;
 import com.wirecard.ecom.model.Notification;
-// import com.wirecard.ecom.model.Notifications;
+import com.wirecard.ecom.model.Notifications;
 import com.wirecard.ecom.model.CardToken;
 import com.wirecard.ecom.model.Payment;
 import com.wirecard.ecom.model.TransactionType;
@@ -49,9 +49,6 @@ import com.wirecard.ecom.ResponseCode;
 import com.wirecard.ecom.card.model.CardPayment;
 
 public class RNWirecardModule extends ReactContextBaseJavaModule implements ActivityEventListener {
-    //private static final String ENCRYPTION_ALGORITHM = "HS256";
-    //private static final String UTF_8 = "UTF-8";
-     //public CardPayment wirecardPayment;
     public final static int REQUEST_TIMEOUT = 30;
     public Callback onPaymentFailure;
     public Callback onPaymentSuccess;
@@ -79,21 +76,14 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         String environment,
         Callback onSuccess,
         Callback onFailure){
-        Log.i(
-            "wirecard-react-native",
-            " trying to initiate client with endpoint: " + environment);
         try{
             wirecardClient = new Client(this.getCurrentActivity(),environment, REQUEST_TIMEOUT);
-            Log.i
-            ("wirecard-react-native", 
-            "initiating client with endpoint: " + environment);
             onSuccess.invoke();
         }catch (Exception e){
             Log.i(
                 "wirecard-react-native",
                 "client failed to initiate with endpoint: " + environment);
             Log.i("wirecard-react-native", e.getMessage());
-
             onFailure.invoke();
         }
     }
@@ -148,7 +138,6 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
                 .setAmount(getAmount(paymentInfo.getString("amount")))
                 .setCurrency(paymentInfo.getString("currency"))
                 .build();
-        Log.i("wirecard-react-native",paymentInfo.getString("currency"));
         if(paymentInfo.hasKey("token")){
             String token = paymentInfo.getString("token");
             String maskedAccountNumber = paymentInfo.getString("maskedAccountNumber");
@@ -157,11 +146,8 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             cardToken.setTokenId(token);
             wirecardPayment.setCardToken(cardToken);
         }
-        // ArrayList<Notification> notificationList = new ArrayList<>();
-        /*
+         ArrayList<Notification> notificationList = new ArrayList<>();
         if(paymentInfo.hasKey("notificationUrl")) {
-            Log.i("wirecard-react-native","has notification, url below");
-            Log.i("wirecard-react-native",paymentInfo.getString("notificationUrl"));
             Notification SuccessNotif = new Notification();
             SuccessNotif.setTransactionState(TransactionState.SUCCESS.getValue());
             SuccessNotif.setUrl(paymentInfo.getString("notificationUrl"));
@@ -179,7 +165,6 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             notifications.setFormat(Notifications.FORMAT_JSON);
             // wirecardPayment.setNotifications(notifications);
         }
-        */
         Log.i("wirecard-react-native","server sent:");
         Log.i("wirecard-react-native",paymentInfo.getString("signature"));
         Log.i("wirecard-react-native","generated:");
@@ -187,7 +172,6 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         Log.i("wirecard-react-native",paymentInfo.getString("amount"));
         Log.i("wirecard-react-native",paymentInfo.getString("currency"));
         Log.i("wirecard-react-native","lauching screen");
-
         wirecardPayment.setRecurring(false);
         wirecardPayment.setAttempt3d(false);
         wirecardPayment.setRequireManualCardBrandSelection(false);
