@@ -72,44 +72,18 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                   onPaymentFailed:(RCTResponseSenderBlock) onFailure
                   ){
     WDECPayment * wcpayment = [self createPayment:payment[@"paymentMethod"] paymentData:payment];
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss'Z'";
-    NSDate *timeStamp = [formatter dateFromString:payment[@"requestTimeStamp"]];
-    [wcpayment setRequestTimestamp: timeStamp];
-    if([payment objectForKey:@"notificationUrl"] != nil){
-        WDECNotification *notification = [WDECNotification new];
-        notification.URL = [NSURL URLWithString:payment[@"notificationUrl"]];
-        wcpayment.notifications = @[notification];
+    if([payment objectForKey:@"notifications"] != nil){
+        wcpayment.notifications = [NSArray new];
+        NSArray * notificationsURLS = payment[@"notifications"];
+        for(int i = 0; i < notificationsURLS.count;i++){
+            WDECNotification *notification = [WDECNotification new];
+            notification.URL = [NSURL URLWithString:notificationsURLS[i]];
+            NSLog(@"adding notification url %@",notificationsURLS[i]);
+            wcpayment.notifications = [wcpayment.notifications arrayByAddingObject: notification];
+        }
     }
     self.onPaymentFailed = onFailure;
     self.onPaymentSuccessfull = onSuccess;
-    /*
-    NSLog(@"server sent signature %@",wcpayment.signature);
-    NSLog(@"OBJ converting fields to strings");
-    NSString *requestIDStr = wcpayment.requestID;
-    NSString *transactionTypeStr = WDECTransactionTypeGetCode(wcpayment.transactionType) ?: @"";
-    NSString *amountStr = [wcpayment.amount stringValue];
-    NSString *currencyStr = wcpayment.currency ?: @"";
-    NSString *IPAddressStr = wcpayment.IPAddress;
-    NSString *merchantAccount = wcpayment.merchantAccountID;
-    NSDate *requestTimestamp = [NSDate date]; // UTC
-    NSString *requestTimestampStr = payment[@"requestTimeStamp"];
-    NSLog(@"OBJ creating signature account id %@",wcpayment.merchantAccountID);
-    NSLog(@"OBJ creating signature account secret %@",@"b3b131ad-ea7e-48bc-9e71-78d0c6ea579d");
-    
-    
-    wcpayment.signature = [self
-                         serverSideSignatureCalculationV2:requestTimestampStr
-                         requestID:requestIDStr
-                         merchantID:merchantAccount
-                         transactionType:transactionTypeStr
-                         amount:amountStr
-                         currency:currencyStr
-                         IPAddress:IPAddressStr
-                         secretKey:@"b3b131ad-ea7e-48bc-9e71-78d0c6ea579d"];
-    */
-   // NSLog(@"OBJ right before call %@",wcpayment);
-    // [self logPayment:wcpayment];
     if(self.client){
         @weakify(self);
         [self.client makePayment:
@@ -183,7 +157,6 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     
     return result;
 }
-
 - (WDECPayment *) createCardPayment:(NSDictionary *) paymentData
 {
     WDECCardPayment *cardPayment = [WDECCardPayment new];
@@ -211,55 +184,6 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     NSLog(@"PAYMENT.SIGNATURE %@", payment.signature);
     //NSLog(@"PAYMENT.TOKEN C%", payment.token);
 }
-/// SIMULATED SERVER SIDE CODE
-/*
-- (NSString *)serverSideSignatureCalculationV2:(NSString *)requestTimestamp
-                                     requestID:(NSString *)requestID
-                                    merchantID:(NSString *)merchantID
-                               transactionType:(NSString *)transactionType
-                                        amount:(NSString *)amount
-                                      currency:(NSString *)currency
-                                     IPAddress:(NSString *)IPAddress
-                                     secretKey:(NSString *)secretKey
-{
-    NSLog(@"starting server side Calculations");
-    NSMutableArray<NSString *> *params = [NSMutableArray arrayWithCapacity:9];
-    [params addObject:@"HS256"];
-    [params addObject:[NSString stringWithFormat:@"request_time_stamp=%@", requestTimestamp]];
-    NSLog(@"payment object info=%@ %@ %@ %@ %@", requestTimestamp,merchantID , transactionType , amount , currency);
-    [params addObject:[NSString stringWithFormat:@"merchant_account_id=%@", merchantID]];
-    [params addObject:[NSString stringWithFormat:@"request_id=%@", requestID]];
-    [params addObject:[NSString stringWithFormat:@"transaction_type=%@", transactionType]];
-    [params addObject:[NSString stringWithFormat:@"requested_amount=%@", amount]];
-    [params addObject:[NSString stringWithFormat:@"requested_amount_currency=%@", currency]];
-    if (IPAddress) {
-        [params addObject:[NSString stringWithFormat:@"ip_address=%@", requestTimestamp]];
-    }
-    NSString *payload = [params componentsJoinedByString:@"\n"];
-    
-    NSString *payloadBase64 = [[payload dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0];
-    NSString *hmacBase64    = [self HMAC256WithKey:secretKey data:payload];
-    
-    NSString *signature = [@[payloadBase64, hmacBase64] componentsJoinedByString:@"."];
-    return signature;
-}
-- (nullable NSString *)HMAC256WithKey:(nonnull NSString *)key data:(NSString *) data {
-    if (!key) {
-        return nil;
-    }
-    
-    NSData *rawData = [data dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *rawKey  = [key  dataUsingEncoding:NSUTF8StringEncoding];
-    
-    NSMutableData *hash = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH ];
-    CCHmac(kCCHmacAlgSHA256, rawKey.bytes, rawKey.length, rawData.bytes, rawData.length, hash.mutableBytes);
-    
-    NSData *rawHMAC = [NSData dataWithData:hash];
-    
-    NSString *HMAC  = [rawHMAC base64EncodedStringWithOptions:0];
-    return HMAC;
-}
 
-*/
 @end
   
