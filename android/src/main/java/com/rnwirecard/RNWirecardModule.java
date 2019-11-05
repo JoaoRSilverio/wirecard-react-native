@@ -253,7 +253,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             return wresp;
     }
     public static  BigDecimal getAmount(String amount){
-        BigDecimal parsedAmount =new BigDecimal(amount).setScale(2);
+        BigDecimal parsedAmount =new BigDecimal(amount);
         return parsedAmount;
     }
 
