@@ -165,13 +165,6 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             notifications.setFormat(Notifications.FORMAT_JSON);
             // wirecardPayment.setNotifications(notifications);
         }
-        Log.i("wirecard-react-native","server sent:");
-        Log.i("wirecard-react-native",paymentInfo.getString("signature"));
-        Log.i("wirecard-react-native","generated:");
-        //Log.i("wirecard-react-native",signature);
-        Log.i("wirecard-react-native",paymentInfo.getString("amount"));
-        Log.i("wirecard-react-native",paymentInfo.getString("currency"));
-        Log.i("wirecard-react-native","lauching screen");
         wirecardPayment.setRecurring(false);
         wirecardPayment.setAttempt3d(false);
         wirecardPayment.setRequireManualCardBrandSelection(false);
