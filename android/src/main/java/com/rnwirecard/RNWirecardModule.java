@@ -125,11 +125,6 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
     //.setTransactionType(paymentInfo.getString("transactionType"))
     public CardPayment createCardPayment(ReadableMap paymentInfo){
        
-        /*
-        String signature = this.generateSignatureV2(
-            paymentInfo.getString("requestTimeStamp"), paymentInfo.getString("requestID"),
-            paymentInfo.getString("merchantID"), paymentInfo.getString("amount"));
-        */
         CardPayment wirecardPayment = new CardPayment.Builder()
                 .setSignature(paymentInfo.getString("signature"))
                 .setMerchantAccountId(paymentInfo.getString("merchantID"))
@@ -249,69 +244,5 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         BigDecimal parsedAmount =new BigDecimal(amount);
         return parsedAmount;
     }
-
-
-    /**
-     *  ALL THIS METHODS ARE ONLY FOR TESTING IMPLEMENTATION
-     *
-     *
-     */
-    /*
-     public static String generateTimestamp() {
-     LocalDateTime current = LocalDateTime.now(ZoneOffset.UTC);
-     DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-     String timestamp = current.format(formatter);
-     return timestamp.substring(0,timestamp.length() - 4) + "Z";
-     }
-
-
-     public String generateSignatureV2(
-         String timestamp,
-         String requestID,
-         String mercAccount,
-         String amount
-         ) {
-     Map<String, String> map = new HashMap<>();
-     map.put("request_time_stamp", timestamp); // yyyy-MM-dd'T'HH:mm:ssXXX
-     map.put("request_id", requestID);
-     map.put("merchant_account_id", mercAccount);
-     map.put("transaction_type", "purchase");
-     map.put("requested_amount", amount);
-     map.put("requested_amount_currency", "EUR");
-
-     return toHmacSha256(map, "b3b131ad-ea7e-48bc-9e71-78d0c6ea579d");
-     }
-
-     private String toHmacSha256(Map<String, String> fields, String secret) {
-     Charset charset = Charset.forName("UTF-8");
-
-     StringBuilder builder = new StringBuilder("HS256\n");
-     for (Map.Entry<String, String> field : fields.entrySet()) {
-     builder.append(field.getKey());
-     builder.append("=");
-     builder.append(field.getValue());
-     builder.append("\n");
-     }
-     byte[] data = builder.toString().getBytes(charset);
-     byte[] key = secret.getBytes(charset);
-     byte[] sign = sign(key, data);
-     return new StringBuilder()
-     .append(Base64.encodeToString(data,Base64.NO_WRAP))
-     .append(".")
-     .append(Base64.encodeToString(sign,Base64.NO_WRAP))
-     .toString();
-     }
-
-     public byte[] sign(byte[] key, byte[] data) {
-     try {
-     Mac mac = Mac.getInstance("HmacSHA256");
-     mac.init(new SecretKeySpec(key, "HmacSHA256"));
-     byte[] signature = mac.doFinal(data);
-     return signature;
-     } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-     return null;
-     }
-     }
-     */
 
 }
