@@ -137,6 +137,8 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
                 .setRequestId(paymentInfo.getString("requestID"))
                 .setAmount(getAmount(paymentInfo.getString("amount")))
                 .setCurrency(paymentInfo.getString("currency"))
+                .setDescriptor(paymentInfo.getString("descriptor"))
+                .setOrderId(paymentInfo.getString("orderID"))
                 .build();
         if(paymentInfo.hasKey("token")){
             String token = paymentInfo.getString("token");

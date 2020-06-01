@@ -111,6 +111,8 @@ export interface IRNWirecardCcPayment {
     token?:string;
     maskedAccountNumber?:string;
     notificationUrl?: string;
+    orderID?: string;
+    descriptor?: string;
 }
 
 export default class ReactNativeWirecard{
