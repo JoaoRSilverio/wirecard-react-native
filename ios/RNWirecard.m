@@ -177,7 +177,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     if([paymentData objectForKey:@"descriptor" != nil]) {
         [order setDescriptor:(NSString * _Nullable) paymentData[@"descriptor"]]
     }
-    if([paymentData objectForKey:@"orderID"!= nil || paymentData objectForKey:@"orderID"!= nil ]){
+    if([paymentData objectForKey:@"orderID"!= nil] || [paymentData objectForKey:@"descriptor"!= nil ]){
      [cardPayment setOrder:(WDECOrder * _Nullable) order];
     }
     if([paymentData objectForKey:@"token"] != nil){
