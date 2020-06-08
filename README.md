@@ -1,19 +1,8 @@
 
 # react-native-wirecard
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
-ITS NOT READY FOR PRODUCTION
+A React-Native wrapper for the Wirecard SDK's
+Android: com.wirecard.ecom:card 3.4.0
+Ios: paymentSDK/All 3.6.0
 
 this package is currently in development v2.0.0 will be usable .
 dont waste your time implementing any version below.
@@ -110,7 +99,25 @@ export default class PaymentManager {
 	}
 }
 
-// TODO: What to do with the module?
-RNWirecard;
+```
+### IRNWirecardCcPayment
+
+amount: string;
+paymentMethod: string;
+currency: string;
+requestID: string;
+merchantID: string;
+signature: string;
+token?: string;
+maskedAccountNumber?: string;
+notificationUrl?: string;
+
+### IRNWirecardCCPaymentResponse
+error: string; // is empty on success
+tokenId: string;
+transactionState: string;
+transactionId: string;
+requestId: string;
+
 ```
   
