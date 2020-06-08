@@ -34,8 +34,8 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-
-
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 import com.wirecard.ecom.model.Status;
 import com.wirecard.ecom.Client;
 import com.wirecard.ecom.model.Notification;
@@ -47,6 +47,8 @@ import com.wirecard.ecom.model.TransactionState;
 import com.wirecard.ecom.model.out.PaymentResponse;
 import com.wirecard.ecom.ResponseCode;
 import com.wirecard.ecom.card.model.CardPayment;
+import com.wirecard.ecom.googlepay.model.GooglePayPayment;
+
 
 public class RNWirecardModule extends ReactContextBaseJavaModule implements ActivityEventListener {
     public final static int REQUEST_TIMEOUT = 30;
@@ -111,12 +113,21 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             case "paypal":
                 //PayPalPayment payPalPayment = this.createPayPalPayment(paymentInfo);
                 //wirecardClient.startPayment(payPalPayment);
+                break;
             case "sepa":
                 // SepaPayment sepaPayment = this.createSepaPayment(paymentInfo);
                 // wirecardClient.startPayment(sepaPayment);
+                break;
             case "zapp":
                 // ZappPayment zappPayment = this.createZappPayment(paymentInfo);
                 // wirecardClient.startPayment(zappPayment);
+                break;
+            case "gpay":
+                GooglePayPayment gPayment = this.createGPayPayment(paymentInfo);
+                wirecardClient.startPayment(gPayment);
+                break;
+
+
             default:
                 CardPayment defaultCardPayment = this.createCardPayment(paymentInfo);
                 break;
@@ -166,7 +177,24 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         wirecardPayment.setAnimatedCardPayment(true);
         return wirecardPayment;
     }
-
+    public GooglePayPayment createGPayPayment(ReadableMap paymentInfo){
+        GooglePayPayment googlePayPayment = new GooglePayPayment.Builder()
+                .setShippingAddressRequired(paymentInfo.getBoolean("requireShippingAddress"))
+                .setBillingAddressRequired(paymentInfo.getBoolean("requireBillingAddress"))
+                .setEmailAddressRequired(paymentInfo.getBoolean("requireEmailAddress"))
+                .setPhoneNumberRequired(paymentInfo.getBoolean("requirePhoneNumber"))
+                // .setGooglePayUiTheme(true)
+                // .setSupportedCardBrands(cardBrands)
+                .setTransactionType(TransactionType.PURCHASE)
+                .setMerchantAccountId(paymentInfo.getString("merchantID"))
+                .setSignature(paymentInfo.getString("signature"))
+                .setRequestId(paymentInfo.getString("requestID"))
+                .setAmount(getAmount(paymentInfo.getString("amount")))
+                .setCurrency(paymentInfo.getString("currency"))
+                .build();
+        googlePayPayment.setEnvironment(WalletConstants.ENVIRONMENT_PRODUCTION);
+        return googlePayPayment;
+    }
     @Override
     public void onActivityResult(
         Activity activity, 
