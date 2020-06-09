@@ -171,10 +171,10 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             notifications.setFormat(Notifications.FORMAT_JSON);
             // wirecardPayment.setNotifications(notifications);
         }
-        wirecardPayment.setRecurring(false);
-        wirecardPayment.setAttempt3d(false);
-        wirecardPayment.setRequireManualCardBrandSelection(false);
-        wirecardPayment.setAnimatedCardPayment(true);
+        wirecardPayment.setRecurring(paymentInfo.getBoolean("setRecurring"));
+        wirecardPayment.setAttempt3d(paymentInfo.getBoolean("setAttempt3d"));
+        wirecardPayment.setRequireManualCardBrandSelection(paymentInfo.getBoolean("setRequireManualCardBrandSelection"));
+        wirecardPayment.setAnimatedCardPayment(paymentInfo.getBoolean("setAnimatedCardPayment"));
         return wirecardPayment;
     }
     public GooglePayPayment createGPayPayment(ReadableMap paymentInfo){

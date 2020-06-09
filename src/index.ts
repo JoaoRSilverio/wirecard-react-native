@@ -31,7 +31,7 @@ export const PAYMENT_METHODS = {
         }
     },
     GPAY:{
-        paymentMethod:"gPay",
+        paymentMethod:"gpay",
     },
     PAYPAL:{
         paymentMethod:"paypal",
@@ -114,6 +114,10 @@ export interface IRNWirecardCcPayment {
     token?:string;
     maskedAccountNumber?:string;
     notificationUrl?: string;
+    setAttempt3d: boolean;
+    setRecurring: boolean;
+    setRequireManualCardBrandSelection: boolean;
+    setAnimatedCardPayment: boolean;
 }
 export interface IRNWirecardGPayPayment {
     amount:string;
