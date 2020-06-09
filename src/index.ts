@@ -114,6 +114,8 @@ export interface IRNWirecardCcPayment {
     token?:string;
     maskedAccountNumber?:string;
     notificationUrl?: string;
+    orderID?: string;
+    descriptor?: string;
     setAttempt3d: boolean;
     setRecurring: boolean;
     setRequireManualCardBrandSelection: boolean;

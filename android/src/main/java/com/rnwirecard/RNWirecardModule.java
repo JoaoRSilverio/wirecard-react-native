@@ -152,6 +152,13 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             cardToken.setTokenId(token);
             wirecardPayment.setCardToken(cardToken);
         }
+        if(paymentInfo.hasKey("descriptor")){
+            wirecardPayment.setDescriptor(paymentInfo.getString("descriptor"));
+        }
+        if(paymentInfo.hasKey("orderID")){
+            wirecardPayment.setOrderNumber(paymentInfo.getString("orderID"));
+        }      
+               
          ArrayList<Notification> notificationList = new ArrayList<>();
         if(paymentInfo.hasKey("notificationUrl")) {
             Notification SuccessNotif = new Notification();

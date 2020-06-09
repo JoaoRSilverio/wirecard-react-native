@@ -1,6 +1,7 @@
 #import "RNWirecard.h"
 #import <WDeCom/WDeCom.h>
 #import <WdeComCard/WDeComCard.h>
+#import <WdeCom/WDECOrder.h>
 #import <CommonCrypto/CommonHMAC.h>
 #import <libextobjc/EXTScope.h>
 #import "NSDateFormatter+Utils.h"
@@ -160,12 +161,25 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
 - (WDECPayment *) createCardPayment:(NSDictionary *) paymentData
 {
     WDECCardPayment *cardPayment = [WDECCardPayment new];
+
+    
     [cardPayment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber decimalNumberWithString: paymentData[@"amount"]]];
     [cardPayment setCurrency:(NSString * _Nullable) paymentData[@"currency"]];
+    
     [cardPayment setTransactionType : WDECTransactionTypePurchase];
     [cardPayment setMerchantAccountID:(NSString * _Nullable) paymentData[@"merchantID"]];
     [cardPayment setRequestID : (NSString * _Nullable) paymentData[@"requestID"]];
     [cardPayment setSignature:(NSString * _Nullable) paymentData[@"signature"]];
+    WDECOrder *order = [WDECOrder new];
+    if([paymentData objectForKey:@"orderID" != nil]){
+       [order setNumber:(NSString * _Nullable) paymentData[@"orderID"]]; 
+    }
+    if([paymentData objectForKey:@"descriptor" != nil]) {
+        [order setDescriptor:(NSString * _Nullable) paymentData[@"descriptor"]]
+    }
+    if([paymentData objectForKey:@"orderID"!= nil] || [paymentData objectForKey:@"descriptor"!= nil ]){
+     [cardPayment setOrder:(WDECOrder * _Nullable) order];
+    }
     if([paymentData objectForKey:@"token"] != nil){
         WDECCardToken *cardToken = [WDECCardToken new];
         cardToken.tokenID =  paymentData[@"token"];
