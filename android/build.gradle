@@ -29,7 +29,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
-        versionName "2.0-rc1"
+        versionName "2.0-rc3"
     }
     lintOptions {
         abortOnError false
@@ -56,7 +56,7 @@ repositories {
 
 
 dependencies {
-    implementation 'com.facebook.react:react-native:0.59.10'
+    implementation 'com.facebook.react:react-native:+'
     implementation "com.wirecard.ecom:card:$wirecardEcomLibraryVersion"
     implementation 'com.android.support:appcompat-v7:27.0.0'
 
