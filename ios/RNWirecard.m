@@ -174,10 +174,10 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     if([paymentData objectForKey:@"orderID" != nil]){
        [order setNumber:(NSString * _Nullable) paymentData[@"orderID"]]; 
     }
-    if([paymentData objectForKey:@"descriptor" != nil]) {
-        [order setDescriptor:(NSString * _Nullable) paymentData[@"descriptor"]]
+    if((NSString * _Nullable) [paymentData objectForKey:@"descriptor"] != nil) {
+        [order setDescriptor:(NSString * _Nullable) paymentData[@"descriptor"]];
     }
-    if([paymentData objectForKey:@"orderID"!= nil] || [paymentData objectForKey:@"descriptor"!= nil ]){
+    if((NSString * _Nullable)[paymentData objectForKey:@"orderID"]!= nil || (NSString * _Nullable)[paymentData objectForKey:@"descriptor"] != nil ){
      [cardPayment setOrder:(WDECOrder * _Nullable) order];
     }
     if([paymentData objectForKey:@"token"] != nil){
