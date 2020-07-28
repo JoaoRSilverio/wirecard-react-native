@@ -171,7 +171,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     [cardPayment setRequestID : (NSString * _Nullable) paymentData[@"requestID"]];
     [cardPayment setSignature:(NSString * _Nullable) paymentData[@"signature"]];
     WDECOrder *order = [WDECOrder new];
-    if([paymentData objectForKey:@"orderID" != nil]){
+    if((NSString * _Nullable) [paymentData objectForKey:@"orderID"] != nil){
        [order setNumber:(NSString * _Nullable) paymentData[@"orderID"]]; 
     }
     if((NSString * _Nullable) [paymentData objectForKey:@"descriptor"] != nil) {
