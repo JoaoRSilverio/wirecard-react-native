@@ -111,6 +111,11 @@ export interface IRNWirecardCcPayment {
     token?:string;
     maskedAccountNumber?:string;
     notificationUrl?: string;
+    descriptor?: string;
+    setRecurring: boolean;
+    setAttempt3d: boolean;
+    setRequireManualCardBrandSelection: boolean;
+    setAnimatedCardPayment:boolean
 }
 
 export default class ReactNativeWirecard{
