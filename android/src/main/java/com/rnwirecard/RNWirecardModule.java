@@ -34,8 +34,8 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-
-
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 import com.wirecard.ecom.model.Status;
 import com.wirecard.ecom.Client;
 import com.wirecard.ecom.model.Notification;
@@ -47,6 +47,8 @@ import com.wirecard.ecom.model.TransactionState;
 import com.wirecard.ecom.model.out.PaymentResponse;
 import com.wirecard.ecom.ResponseCode;
 import com.wirecard.ecom.card.model.CardPayment;
+import com.wirecard.ecom.googlepay.model.GooglePayPayment;
+
 
 public class RNWirecardModule extends ReactContextBaseJavaModule implements ActivityEventListener {
     public final static int REQUEST_TIMEOUT = 30;
@@ -111,12 +113,21 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             case "paypal":
                 //PayPalPayment payPalPayment = this.createPayPalPayment(paymentInfo);
                 //wirecardClient.startPayment(payPalPayment);
+                break;
             case "sepa":
                 // SepaPayment sepaPayment = this.createSepaPayment(paymentInfo);
                 // wirecardClient.startPayment(sepaPayment);
+                break;
             case "zapp":
                 // ZappPayment zappPayment = this.createZappPayment(paymentInfo);
                 // wirecardClient.startPayment(zappPayment);
+                break;
+            case "gpay":
+                GooglePayPayment gPayment = this.createGPayPayment(paymentInfo);
+                wirecardClient.startPayment(gPayment);
+                break;
+
+
             default:
                 CardPayment defaultCardPayment = this.createCardPayment(paymentInfo);
                 break;
@@ -125,11 +136,6 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
     //.setTransactionType(paymentInfo.getString("transactionType"))
     public CardPayment createCardPayment(ReadableMap paymentInfo){
        
-        /*
-        String signature = this.generateSignatureV2(
-            paymentInfo.getString("requestTimeStamp"), paymentInfo.getString("requestID"),
-            paymentInfo.getString("merchantID"), paymentInfo.getString("amount"));
-        */
         CardPayment wirecardPayment = new CardPayment.Builder()
                 .setSignature(paymentInfo.getString("signature"))
                 .setMerchantAccountId(paymentInfo.getString("merchantID"))
@@ -146,6 +152,13 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             cardToken.setTokenId(token);
             wirecardPayment.setCardToken(cardToken);
         }
+        if(paymentInfo.hasKey("descriptor")){
+            wirecardPayment.setDescriptor(paymentInfo.getString("descriptor"));
+        }
+        if(paymentInfo.hasKey("orderID")){
+            wirecardPayment.setOrderNumber(paymentInfo.getString("orderID"));
+        }      
+               
          ArrayList<Notification> notificationList = new ArrayList<>();
         if(paymentInfo.hasKey("notificationUrl")) {
             Notification SuccessNotif = new Notification();
@@ -165,20 +178,30 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             notifications.setFormat(Notifications.FORMAT_JSON);
             // wirecardPayment.setNotifications(notifications);
         }
-        Log.i("wirecard-react-native","server sent:");
-        Log.i("wirecard-react-native",paymentInfo.getString("signature"));
-        Log.i("wirecard-react-native","generated:");
-        //Log.i("wirecard-react-native",signature);
-        Log.i("wirecard-react-native",paymentInfo.getString("amount"));
-        Log.i("wirecard-react-native",paymentInfo.getString("currency"));
-        Log.i("wirecard-react-native","lauching screen");
-        wirecardPayment.setRecurring(false);
-        wirecardPayment.setAttempt3d(false);
-        wirecardPayment.setRequireManualCardBrandSelection(false);
-        wirecardPayment.setAnimatedCardPayment(true);
+        wirecardPayment.setRecurring(paymentInfo.getBoolean("setRecurring"));
+        wirecardPayment.setAttempt3d(paymentInfo.getBoolean("setAttempt3d"));
+        wirecardPayment.setRequireManualCardBrandSelection(paymentInfo.getBoolean("setRequireManualCardBrandSelection"));
+        wirecardPayment.setAnimatedCardPayment(paymentInfo.getBoolean("setAnimatedCardPayment"));
         return wirecardPayment;
     }
-
+    public GooglePayPayment createGPayPayment(ReadableMap paymentInfo){
+        GooglePayPayment googlePayPayment = new GooglePayPayment.Builder()
+                .setShippingAddressRequired(paymentInfo.getBoolean("requireShippingAddress"))
+                .setBillingAddressRequired(paymentInfo.getBoolean("requireBillingAddress"))
+                .setEmailAddressRequired(paymentInfo.getBoolean("requireEmailAddress"))
+                .setPhoneNumberRequired(paymentInfo.getBoolean("requirePhoneNumber"))
+                // .setGooglePayUiTheme(true)
+                // .setSupportedCardBrands(cardBrands)
+                .setTransactionType(TransactionType.PURCHASE)
+                .setMerchantAccountId(paymentInfo.getString("merchantID"))
+                .setSignature(paymentInfo.getString("signature"))
+                .setRequestId(paymentInfo.getString("requestID"))
+                .setAmount(getAmount(paymentInfo.getString("amount")))
+                .setCurrency(paymentInfo.getString("currency"))
+                .build();
+        googlePayPayment.setEnvironment(WalletConstants.ENVIRONMENT_PRODUCTION);
+        return googlePayPayment;
+    }
     @Override
     public void onActivityResult(
         Activity activity, 
@@ -256,69 +279,5 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         BigDecimal parsedAmount =new BigDecimal(amount);
         return parsedAmount;
     }
-
-
-    /**
-     *  ALL THIS METHODS ARE ONLY FOR TESTING IMPLEMENTATION
-     *
-     *
-     */
-    /*
-     public static String generateTimestamp() {
-     LocalDateTime current = LocalDateTime.now(ZoneOffset.UTC);
-     DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-     String timestamp = current.format(formatter);
-     return timestamp.substring(0,timestamp.length() - 4) + "Z";
-     }
-
-
-     public String generateSignatureV2(
-         String timestamp,
-         String requestID,
-         String mercAccount,
-         String amount
-         ) {
-     Map<String, String> map = new HashMap<>();
-     map.put("request_time_stamp", timestamp); // yyyy-MM-dd'T'HH:mm:ssXXX
-     map.put("request_id", requestID);
-     map.put("merchant_account_id", mercAccount);
-     map.put("transaction_type", "purchase");
-     map.put("requested_amount", amount);
-     map.put("requested_amount_currency", "EUR");
-
-     return toHmacSha256(map, "b3b131ad-ea7e-48bc-9e71-78d0c6ea579d");
-     }
-
-     private String toHmacSha256(Map<String, String> fields, String secret) {
-     Charset charset = Charset.forName("UTF-8");
-
-     StringBuilder builder = new StringBuilder("HS256\n");
-     for (Map.Entry<String, String> field : fields.entrySet()) {
-     builder.append(field.getKey());
-     builder.append("=");
-     builder.append(field.getValue());
-     builder.append("\n");
-     }
-     byte[] data = builder.toString().getBytes(charset);
-     byte[] key = secret.getBytes(charset);
-     byte[] sign = sign(key, data);
-     return new StringBuilder()
-     .append(Base64.encodeToString(data,Base64.NO_WRAP))
-     .append(".")
-     .append(Base64.encodeToString(sign,Base64.NO_WRAP))
-     .toString();
-     }
-
-     public byte[] sign(byte[] key, byte[] data) {
-     try {
-     Mac mac = Mac.getInstance("HmacSHA256");
-     mac.init(new SecretKeySpec(key, "HmacSHA256"));
-     byte[] signature = mac.doFinal(data);
-     return signature;
-     } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-     return null;
-     }
-     }
-     */
 
 }

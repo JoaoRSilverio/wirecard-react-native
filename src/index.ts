@@ -30,6 +30,9 @@ export const PAYMENT_METHODS = {
             tokenize:TRANSACTION_TYPES.TOKENIZE
         }
     },
+    GPAY:{
+        paymentMethod:"gpay",
+    },
     PAYPAL:{
         paymentMethod:"paypal",
         transactionType:{
@@ -116,8 +119,21 @@ export interface IRNWirecardCcPayment {
     setAttempt3d: boolean;
     setRequireManualCardBrandSelection: boolean;
     setAnimatedCardPayment:boolean
+    orderID?: string;
 }
-
+export interface IRNWirecardGPayPayment {
+    amount:string;
+    paymentMethod:string;
+    currency:string;
+    requestID:string;
+    merchantID:string;
+    signature:string;
+    environment?: string;
+    requireBillingAddress: boolean;
+    requireEmailAddress: boolean;
+    requirePhoneNumber: boolean;
+    requireShippingAddress: boolean;
+}
 export default class ReactNativeWirecard{
     public static initiateClient(
         onSuccess:()=> void,

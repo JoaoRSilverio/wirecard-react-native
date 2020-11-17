@@ -1,6 +1,6 @@
 {
   "name": "wirecard-react-native",
-  "version": "2.0.0-rc1",
+  "version": "2.0.0-rc.5",
   "description": "Wirecard Mobile SDK Credit Card Only React-Native implementation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,8 +21,11 @@
     "react-native": "^0.41.2",
     "react-native-windows": "0.41.0-rc.1"
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
+    "@types/jest": "^25.2.3",
+    "ts-jest": "^26.1.0",
     "prettier": "^1.16.4",
     "tslint": "^5.14.0",
     "tslint-config-prettier": "^1.18.0",
