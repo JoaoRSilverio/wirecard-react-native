@@ -107,6 +107,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                  self.onPaymentSuccessfull(@[
                                              [NSNull null],
                                              cardResponse.cardToken.tokenID,
+                                             cardResponse.card.brand,
                                              transactionState,
                                              response.transactionIdentifier,
                                              response.requestID]);
@@ -158,6 +159,39 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     
     return result;
 }
+
+- (WDECTransactionType *) getTransactionTypeFromString:(NSString *) transactionType{
+    switch (transactionType) {
+        case @"authorization":
+            return WDECTransactionTypeAuthorization;
+        case @"authorization-only":
+            return WDECTransactionTypeAuthorizationOnly;
+        case @"capture-authorization":
+            return WDECTransactionTypeCaptureAuthorization;
+        case @"debit":
+            return WDECTransactionTypeDebit;
+        case @"pending-debit":
+            return WDECTransactionTypePendingDebit;
+        case @"purchase":
+            return WDECTransactionTypePurchase;
+        case @"referenced-authorization":
+            return WDECTransactionTypeReferencedAuthorization;
+        case @"referenced-purchase":
+            return WDECTransactionTypeReferencedPurchase;
+        case @"refund-capture":
+            return WDECTransactionTypeRefundCapture;
+        case @"refund-purchase":
+            return WDECTransactionTypeRefundPurchase;
+        case @"tokenize":
+            return WDECTransactionTypeTokenize;
+        case @"void-authorization":
+            return WDECTransactionTypeVoidAuthorization;
+        default:
+            return WDECTransactionTypeUndefined;
+            break;
+    }
+}
+
 - (WDECPayment *) createCardPayment:(NSDictionary *) paymentData
 {
     WDECCardPayment *cardPayment = [WDECCardPayment new];
@@ -166,7 +200,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     [cardPayment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber decimalNumberWithString: paymentData[@"amount"]]];
     [cardPayment setCurrency:(NSString * _Nullable) paymentData[@"currency"]];
     
-    [cardPayment setTransactionType : WDECTransactionTypePurchase];
+    [cardPayment setTransactionType : [self getTransactionFromString: paymentData[@"transactionType"]]];
     [cardPayment setMerchantAccountID:(NSString * _Nullable) paymentData[@"merchantID"]];
     [cardPayment setRequestID : (NSString * _Nullable) paymentData[@"requestID"]];
     [cardPayment setSignature:(NSString * _Nullable) paymentData[@"signature"]];
