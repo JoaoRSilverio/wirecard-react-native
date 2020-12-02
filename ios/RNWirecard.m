@@ -104,10 +104,11 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
                                         requestId]);
              }else if(response){
                   WDECCardPaymentResponse *cardResponse = (WDECCardPaymentResponse *) response;
+                 NSString * cardBrand = [self getCardBrandString: cardResponse.card.brand];
                  self.onPaymentSuccessfull(@[
                                              [NSNull null],
                                              cardResponse.cardToken.tokenID,
-                                             cardResponse.card.brand,
+                                             cardBrand,
                                              transactionState,
                                              response.transactionIdentifier,
                                              response.requestID]);
@@ -115,6 +116,26 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
          }];
     }else{
         NSLog(@"no client initiated");
+    }
+}
+- (NSString *) getCardBrandString:(WDECCardBrand) brand{
+    switch ((int)brand) {
+        case (int)WDECCardBrandUndefined:
+            return @"undefined";
+        case (int)WDECCardBrandAmex:
+            return @"amex";
+        case (int)WDECCardBrandMasterCard:
+            return @"mastercard";
+        case (int)WDECCardBrandMaestro:
+            return @"maestro";
+        case (int)WDECCardBrandVisa:
+            return @"visa";
+        case (int)WDECCardBrandDiscover:
+            return @"discover";
+            break;
+        default:
+            return @"other";
+            break;
     }
 }
 - (NSString *) getTransactionStateString:(WDECTransactionState) state {
@@ -160,36 +181,26 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     return result;
 }
 
-- (WDECTransactionType *) getTransactionTypeFromString:(NSString *) transactionType{
-    switch (transactionType) {
-        case @"authorization":
-            return WDECTransactionTypeAuthorization;
-        case @"authorization-only":
-            return WDECTransactionTypeAuthorizationOnly;
-        case @"capture-authorization":
-            return WDECTransactionTypeCaptureAuthorization;
-        case @"debit":
-            return WDECTransactionTypeDebit;
-        case @"pending-debit":
-            return WDECTransactionTypePendingDebit;
-        case @"purchase":
-            return WDECTransactionTypePurchase;
-        case @"referenced-authorization":
-            return WDECTransactionTypeReferencedAuthorization;
-        case @"referenced-purchase":
-            return WDECTransactionTypeReferencedPurchase;
-        case @"refund-capture":
-            return WDECTransactionTypeRefundCapture;
-        case @"refund-purchase":
-            return WDECTransactionTypeRefundPurchase;
-        case @"tokenize":
-            return WDECTransactionTypeTokenize;
-        case @"void-authorization":
-            return WDECTransactionTypeVoidAuthorization;
-        default:
-            return WDECTransactionTypeUndefined;
-            break;
+- (WDECTransactionType) getTransactionTypeFromString:(NSString *) transactionType{
+    NSDictionary *transactions = @{
+         @"authorization" : @(WDECTransactionTypeAuthorization),
+         @"authorization-only" :@(WDECTransactionTypeAuthorizationOnly),
+         @"capture-authorization":@(WDECTransactionTypeCaptureAuthorization),
+         @"debit":@(WDECTransactionTypeDebit),
+         @"pending-debit":@(WDECTransactionTypePendingDebit),
+         @"purchase":@(WDECTransactionTypePurchase),
+         @"referenced-authorization":@(WDECTransactionTypeReferencedAuthorization),
+         @"referenced-purchase": @(WDECTransactionTypeReferencedPurchase),
+         @"refund-capture":@(WDECTransactionTypeRefundCapture),
+         @"refund-purchase":@(WDECTransactionTypeRefundPurchase),
+         @"tokenize":@(WDECTransactionTypeTokenize),
+         @"void-authorization":@(WDECTransactionTypeVoidAuthorization),
+         @"undefined":@(WDECTransactionTypeUndefined)
+    };
+    if(transactions[transactionType]){
+        return (WDECTransactionType)transactions[transactionType];
     }
+    return (WDECTransactionType)transactions[@"undefined"];;
 }
 
 - (WDECPayment *) createCardPayment:(NSDictionary *) paymentData
@@ -200,7 +211,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     [cardPayment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber decimalNumberWithString: paymentData[@"amount"]]];
     [cardPayment setCurrency:(NSString * _Nullable) paymentData[@"currency"]];
     
-    [cardPayment setTransactionType : [self getTransactionFromString: paymentData[@"transactionType"]]];
+    [cardPayment setTransactionType : [self getTransactionTypeFromString: paymentData[@"transactionType"]]];
     [cardPayment setMerchantAccountID:(NSString * _Nullable) paymentData[@"merchantID"]];
     [cardPayment setRequestID : (NSString * _Nullable) paymentData[@"requestID"]];
     [cardPayment setSignature:(NSString * _Nullable) paymentData[@"signature"]];
