@@ -29,7 +29,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 3
-        versionName "2.0-rc.8"
+        versionName "2.0-rc.9"
     }
     lintOptions {
         abortOnError false
