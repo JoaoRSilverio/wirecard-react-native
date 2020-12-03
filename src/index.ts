@@ -3,13 +3,13 @@ import {NativeModules} from 'react-native';
 var RNWirecard = NativeModules.RNWirecard;
 
 
-export const TRANSACTION_TYPES ={
-    AUTHORIZATION:'authorization',
-    AUTHORIZATION_ONLY:'authorization-only',
-    DEBIT:'debit',
-    PENDING_DEBIT:'pending-debit',
-    PURCHASE:'purchase',
-    TOKENIZE:'tokenize',
+export enum TRANSACTION_TYPES {
+    AUTHORIZATION = 'authorization',
+    AUTHORIZATION_ONLY = 'authorization-only',
+    DEBIT = 'debit',
+    PENDING_DEBIT = 'pending-debit',
+    PURCHASE = 'purchase',
+    TOKENIZE = 'tokenize',
 }
 
 export const PAYMENT_METHODS = { 
@@ -112,6 +112,7 @@ export interface IRNWirecardCcPayment {
     merchantID:string;
     signature:string;
     token?:string;
+    transactionType: TRANSACTION_TYPES;
     maskedAccountNumber?:string;
     notificationUrl?: string;
     descriptor?: string;
@@ -145,6 +146,7 @@ export default class ReactNativeWirecard{
         onSuccess: (
             error: any,
             tokenId: any,
+            cardBrand: string,
             transactionState: any,
             transactionId: any,
             requestId: any) => void,
