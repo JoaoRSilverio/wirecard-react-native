@@ -181,26 +181,45 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     return result;
 }
 
-- (WDECTransactionType) getTransactionTypeFromString:(NSString *) transactionType{
-    NSDictionary *transactions = @{
-         @"authorization" : @(WDECTransactionTypeAuthorization),
-         @"authorization-only" :@(WDECTransactionTypeAuthorizationOnly),
-         @"capture-authorization":@(WDECTransactionTypeCaptureAuthorization),
-         @"debit":@(WDECTransactionTypeDebit),
-         @"pending-debit":@(WDECTransactionTypePendingDebit),
-         @"purchase":@(WDECTransactionTypePurchase),
-         @"referenced-authorization":@(WDECTransactionTypeReferencedAuthorization),
-         @"referenced-purchase": @(WDECTransactionTypeReferencedPurchase),
-         @"refund-capture":@(WDECTransactionTypeRefundCapture),
-         @"refund-purchase":@(WDECTransactionTypeRefundPurchase),
-         @"tokenize":@(WDECTransactionTypeTokenize),
-         @"void-authorization":@(WDECTransactionTypeVoidAuthorization),
-         @"undefined":@(WDECTransactionTypeUndefined)
-    };
-    if(transactions[transactionType]){
-        return (WDECTransactionType)transactions[transactionType];
+- (WDECTransactionType *) getTransactionTypeFromString:(NSString *) transactionType{
+    if([transactionType isEqualToString:@"authorization"]){
+        return (WDECTransactionType *)WDECTransactionTypeAuthorization;
     }
-    return (WDECTransactionType)transactions[@"undefined"];;
+    if([transactionType isEqualToString:@"capture-authorization"]){
+        return (WDECTransactionType *)WDECTransactionTypeCaptureAuthorization;
+    }
+    if([transactionType isEqualToString:@"authorization-only"]){
+        return (WDECTransactionType *)WDECTransactionTypeAuthorizationOnly;
+    }
+    if([transactionType isEqualToString:@"debit"]){
+        return (WDECTransactionType *) WDECTransactionTypeDebit;
+    }
+    if([transactionType isEqualToString:@"pending-debit"]){
+        return (WDECTransactionType *) WDECTransactionTypePendingDebit;
+    }
+    if([transactionType isEqualToString:@"purchase"]){
+        return (WDECTransactionType *)WDECTransactionTypePurchase;
+    }
+    if([transactionType isEqualToString:@"referenced-authorization"]){
+        return (WDECTransactionType *)WDECTransactionTypeReferencedAuthorization;
+    }
+    if([transactionType isEqualToString:@"referenced-purchase"]){
+        return (WDECTransactionType *)WDECTransactionTypeReferencedPurchase;
+    }
+    if([transactionType isEqualToString:@"refund-capture"]){
+        return (WDECTransactionType *)WDECTransactionTypeRefundCapture;
+    }
+    if([transactionType isEqualToString:@"refund-purchase"]){
+        return (WDECTransactionType *)WDECTransactionTypeRefundPurchase;
+    }
+    if([transactionType isEqualToString:@"tokenize"]){
+        return (WDECTransactionType *)WDECTransactionTypeTokenize;
+    }
+    if([transactionType isEqualToString:@"void-authorization"]){
+        return (WDECTransactionType *)WDECTransactionTypeVoidAuthorization;
+    }
+        return (WDECTransactionType *)WDECTransactionTypeUndefined;
+  
 }
 
 - (WDECPayment *) createCardPayment:(NSDictionary *) paymentData
@@ -211,7 +230,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     [cardPayment setAmount:(NSDecimalNumber* _Nullable)[NSDecimalNumber decimalNumberWithString: paymentData[@"amount"]]];
     [cardPayment setCurrency:(NSString * _Nullable) paymentData[@"currency"]];
     
-    [cardPayment setTransactionType : [self getTransactionTypeFromString: paymentData[@"transactionType"]]];
+    [cardPayment setTransactionType :(WDECTransactionType) [self getTransactionTypeFromString: paymentData[@"transactionType"]]];
     [cardPayment setMerchantAccountID:(NSString * _Nullable) paymentData[@"merchantID"]];
     [cardPayment setRequestID : (NSString * _Nullable) paymentData[@"requestID"]];
     [cardPayment setSignature:(NSString * _Nullable) paymentData[@"signature"]];
