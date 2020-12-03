@@ -1,7 +1,6 @@
 
 package com.rnwirecard;
 
-
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
@@ -49,7 +48,6 @@ import com.wirecard.ecom.ResponseCode;
 import com.wirecard.ecom.card.model.CardPayment;
 import com.wirecard.ecom.googlepay.model.GooglePayPayment;
 
-
 public class RNWirecardModule extends ReactContextBaseJavaModule implements ActivityEventListener {
     public final static int REQUEST_TIMEOUT = 30;
     public Callback onPaymentFailure;
@@ -69,82 +67,73 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
     }
 
     @Override
-    public void onNewIntent(Intent intent){
+    public void onNewIntent(Intent intent) {
 
     }
 
     @ReactMethod
-    public void initiateClient(
-        String environment,
-        Callback onSuccess,
-        Callback onFailure){
-        try{
-            wirecardClient = new Client(this.getCurrentActivity(),environment, REQUEST_TIMEOUT);
+    public void initiateClient(String environment, Callback onSuccess, Callback onFailure) {
+        try {
+            wirecardClient = new Client(this.getCurrentActivity(), environment, REQUEST_TIMEOUT);
             onSuccess.invoke();
-        }catch (Exception e){
-            Log.i(
-                "wirecard-react-native",
-                "client failed to initiate with endpoint: " + environment);
+        } catch (Exception e) {
+            Log.i("wirecard-react-native", "client failed to initiate with endpoint: " + environment);
             Log.i("wirecard-react-native", e.getMessage());
             onFailure.invoke();
         }
     }
+
     @ReactMethod
-    public void testBridge(String received){
-        Log.i("wirecard-react-native",received);
+    public void testBridge(String received) {
+        Log.i("wirecard-react-native", received);
     }
+
     @ReactMethod
-    public void newPaymentRequest(
-        ReadableMap payment,
-        Callback onPaymentAccepted,
-        Callback onPaymentRejected) {
+    public void newPaymentRequest(ReadableMap payment, Callback onPaymentAccepted, Callback onPaymentRejected) {
         this.onPaymentFailure = onPaymentRejected;
         this.onPaymentSuccess = onPaymentAccepted;
         this.startRequestedPayment(payment);
     }
 
-    public void startRequestedPayment(ReadableMap paymentInfo ){
-        Log.i("wirecard-react-native","initiating actual transaction");
+    public void startRequestedPayment(ReadableMap paymentInfo) {
+        Log.i("wirecard-react-native", "initiating actual transaction");
         switch (paymentInfo.getString("paymentMethod")) {
-            case "card":
-                CardPayment cardPayment = this.createCardPayment(paymentInfo);
-                wirecardClient.startPayment(cardPayment);
-                break;
-            case "paypal":
-                //PayPalPayment payPalPayment = this.createPayPalPayment(paymentInfo);
-                //wirecardClient.startPayment(payPalPayment);
-                break;
-            case "sepa":
-                // SepaPayment sepaPayment = this.createSepaPayment(paymentInfo);
-                // wirecardClient.startPayment(sepaPayment);
-                break;
-            case "zapp":
-                // ZappPayment zappPayment = this.createZappPayment(paymentInfo);
-                // wirecardClient.startPayment(zappPayment);
-                break;
-            case "gpay":
-                GooglePayPayment gPayment = this.createGPayPayment(paymentInfo);
-                wirecardClient.startPayment(gPayment);
-                break;
+        case "card":
+            CardPayment cardPayment = this.createCardPayment(paymentInfo);
+            wirecardClient.startPayment(cardPayment);
+            break;
+        case "paypal":
+            // PayPalPayment payPalPayment = this.createPayPalPayment(paymentInfo);
+            // wirecardClient.startPayment(payPalPayment);
+            break;
+        case "sepa":
+            // SepaPayment sepaPayment = this.createSepaPayment(paymentInfo);
+            // wirecardClient.startPayment(sepaPayment);
+            break;
+        case "zapp":
+            // ZappPayment zappPayment = this.createZappPayment(paymentInfo);
+            // wirecardClient.startPayment(zappPayment);
+            break;
+        case "gpay":
+            GooglePayPayment gPayment = this.createGPayPayment(paymentInfo);
+            wirecardClient.startPayment(gPayment);
+            break;
 
-
-            default:
-                CardPayment defaultCardPayment = this.createCardPayment(paymentInfo);
-                break;
+        default:
+            CardPayment defaultCardPayment = this.createCardPayment(paymentInfo);
+            break;
         }
     }
-    //.setTransactionType(paymentInfo.getString("transactionType"))
-    public CardPayment createCardPayment(ReadableMap paymentInfo){
-       
-        CardPayment wirecardPayment = new CardPayment.Builder()
-                .setSignature(paymentInfo.getString("signature"))
+
+    // .setTransactionType(paymentInfo.getString("transactionType"))
+    public CardPayment createCardPayment(ReadableMap paymentInfo) {
+
+        CardPayment wirecardPayment = new CardPayment.Builder().setSignature(paymentInfo.getString("signature"))
                 .setMerchantAccountId(paymentInfo.getString("merchantID"))
-                .setTransactionType(TransactionType.PURCHASE)
-                .setRequestId(paymentInfo.getString("requestID"))
-                .setAmount(getAmount(paymentInfo.getString("amount")))
-                .setCurrency(paymentInfo.getString("currency"))
-                .build();
-        if(paymentInfo.hasKey("token")){
+                .setTransactionType(this.getTransactionType(paymentInfo.getString("transactionType")))
+                .setRequestId(paymentInfo.getString("requestID")).setAmount(getAmount(paymentInfo.getString("amount")))
+                .setCurrency(paymentInfo.getString("currency")).build();
+        if (paymentInfo.hasKey("token")) {
             String token = paymentInfo.getString("token");
             String maskedAccountNumber = paymentInfo.getString("maskedAccountNumber");
             CardToken cardToken = new CardToken();
@@ -152,26 +141,28 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             cardToken.setTokenId(token);
             wirecardPayment.setCardToken(cardToken);
         }
-        if(paymentInfo.hasKey("descriptor")){
+        if (paymentInfo.hasKey("descriptor")) {
             wirecardPayment.setDescriptor(paymentInfo.getString("descriptor"));
         }
-        if(paymentInfo.hasKey("orderID")){
+        if (paymentInfo.hasKey("orderID")) {
             wirecardPayment.setOrderNumber(paymentInfo.getString("orderID"));
-        }      
-               
-         ArrayList<Notification> notificationList = new ArrayList<>();
-        if(paymentInfo.hasKey("notificationUrl")) {
+        }
+
+        ArrayList<Notification> notificationList = new ArrayList<>();
+        if (paymentInfo.hasKey("notificationUrl")) {
             Notification SuccessNotif = new Notification();
             SuccessNotif.setTransactionState(TransactionState.SUCCESS.getValue());
             SuccessNotif.setUrl(paymentInfo.getString("notificationUrl"));
-            //Notification InProgNotif = new Notification(TransactionState.IN_PROGRES,paymentInfo.getString("notificationUrl"));
-            //Notification RepeatedNotif = new Notification(TransactionState.REPEATED,paymentInfo.getString("notificationUrl"));
+            // Notification InProgNotif = new
+            // Notification(TransactionState.IN_PROGRES,paymentInfo.getString("notificationUrl"));
+            // Notification RepeatedNotif = new
+            // Notification(TransactionState.REPEATED,paymentInfo.getString("notificationUrl"));
             Notification FailureNotif = new Notification();
             FailureNotif.setTransactionState(TransactionState.FAILED.getValue());
             FailureNotif.setUrl(paymentInfo.getString("notificationUrl"));
             notificationList.add(SuccessNotif);
-            //notificationList.add(InProgNotif);
-            //notificationList.add(RepeatedNotif);
+            // notificationList.add(InProgNotif);
+            // notificationList.add(RepeatedNotif);
             notificationList.add(FailureNotif);
             Notifications notifications = new Notifications();
             notifications.setNotifications(notificationList);
@@ -180,11 +171,13 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         }
         wirecardPayment.setRecurring(paymentInfo.getBoolean("setRecurring"));
         wirecardPayment.setAttempt3d(paymentInfo.getBoolean("setAttempt3d"));
-        wirecardPayment.setRequireManualCardBrandSelection(paymentInfo.getBoolean("setRequireManualCardBrandSelection"));
+        wirecardPayment
+                .setRequireManualCardBrandSelection(paymentInfo.getBoolean("setRequireManualCardBrandSelection"));
         wirecardPayment.setAnimatedCardPayment(paymentInfo.getBoolean("setAnimatedCardPayment"));
         return wirecardPayment;
     }
-    public GooglePayPayment createGPayPayment(ReadableMap paymentInfo){
+
+    public GooglePayPayment createGPayPayment(ReadableMap paymentInfo) {
         GooglePayPayment googlePayPayment = new GooglePayPayment.Builder()
                 .setShippingAddressRequired(paymentInfo.getBoolean("requireShippingAddress"))
                 .setBillingAddressRequired(paymentInfo.getBoolean("requireBillingAddress"))
@@ -192,65 +185,73 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
                 .setPhoneNumberRequired(paymentInfo.getBoolean("requirePhoneNumber"))
                 // .setGooglePayUiTheme(true)
                 // .setSupportedCardBrands(cardBrands)
-                .setTransactionType(TransactionType.PURCHASE)
-                .setMerchantAccountId(paymentInfo.getString("merchantID"))
-                .setSignature(paymentInfo.getString("signature"))
-                .setRequestId(paymentInfo.getString("requestID"))
-                .setAmount(getAmount(paymentInfo.getString("amount")))
-                .setCurrency(paymentInfo.getString("currency"))
+                .setTransactionType(TransactionType.PURCHASE).setMerchantAccountId(paymentInfo.getString("merchantID"))
+                .setSignature(paymentInfo.getString("signature")).setRequestId(paymentInfo.getString("requestID"))
+                .setAmount(getAmount(paymentInfo.getString("amount"))).setCurrency(paymentInfo.getString("currency"))
                 .build();
         googlePayPayment.setEnvironment(WalletConstants.ENVIRONMENT_PRODUCTION);
         return googlePayPayment;
     }
+
     @Override
-    public void onActivityResult(
-        Activity activity, 
-        int requestCode, 
-        int resultCode, 
-        Intent data) {
-        if(requestCode == Client.PAYMENT_SDK_REQUEST_CODE){
-            Serializable paymentSDKResponse = 
-            data.getSerializableExtra(Client.EXTRA_PAYMENT_SDK_RESPONSE);
-            if(paymentSDKResponse instanceof PaymentResponse){
-                responseHelper(
-                    (PaymentResponse) paymentSDKResponse,
-                    this.getReactApplicationContext());
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+        if (requestCode == Client.PAYMENT_SDK_REQUEST_CODE) {
+            Serializable paymentSDKResponse = data.getSerializableExtra(Client.EXTRA_PAYMENT_SDK_RESPONSE);
+            if (paymentSDKResponse instanceof PaymentResponse) {
+                responseHelper((PaymentResponse) paymentSDKResponse, this.getReactApplicationContext());
             }
         }
     }
 
-    public void responseHelper(
-        PaymentResponse paymentResponse,
-        ReactApplicationContext context) {
+    public void responseHelper(PaymentResponse paymentResponse, ReactApplicationContext context) {
         if (paymentResponse.getErrorMessage() != null) {
             WritableMap wresp = this.getWCRNPaymentResponse(paymentResponse);
-            this.onPaymentFailure.invoke(
-                paymentResponse.getErrorMessage(),
-                wresp.getString("cardToken"),
-                wresp.getString("transactionState"),
-                wresp.getString("transactionId"),
-                wresp.getString("requestId"));
+            this.onPaymentFailure.invoke(paymentResponse.getErrorMessage(), wresp.getString("cardToken"),
+                    wresp.getString("transactionState"), wresp.getString("transactionId"),
+                    wresp.getString("requestId"));
         } else if (paymentResponse.getPayment() != null && paymentResponse.getPayment().getStatuses() != null) {
             WritableMap wresp = this.getWCRNPaymentResponse(paymentResponse);
-            this.onPaymentSuccess.invoke(
-                paymentResponse.getErrorMessage(),
-                wresp.getString("cardToken"),
-                wresp.getString("transactionState"),
-                wresp.getString("transactionId"),
-                wresp.getString("requestId"));
+            this.onPaymentSuccess.invoke(paymentResponse.getErrorMessage(), wresp.getString("cardToken"),
+                    wresp.getString("transactionState"), wresp.getString("transactionId"),
+                    wresp.getString("requestId"));
         }
 
     }
-   
+
+    private TransactionType getTransactionType(String name) {
+        switch (name) {
+        case "authorization":
+            return TransactionType.AUTHORIZATION;
+        case "authorization-only":
+            return TransactionType.AUTHORIZATION_ONLY;
+        case "capture-authorization":
+            return TransactionType.CAPTURE_AUTHORIZATION;
+        case "debit":
+            return TransactionType.DEBIT;
+        case "pending-debit":
+            return TransactionType.PENDING_DEBIT;
+        case "purchase":
+            return TransactionType.PURCHASE;
+        case "referenced-authorization":
+            return TransactionType.REFERENCED_AUTHORIZATION;
+        case "referenced-purchase":
+            return TransactionType.REFERENCED_PURCHASE;
+        case "tokenize":
+            return TransactionType.TOKENIZE;
+        default:
+            return TransactionType.PURCHASE;
+        }
+    }
+
     private WritableMap getWCRNPaymentResponse(PaymentResponse paymentResponse) {
         StringBuilder sb = new StringBuilder();
         sb.append("Response code: ").append(paymentResponse.getResponseCode());
-        if(paymentResponse.getErrorMessage() != null) {
+        if (paymentResponse.getErrorMessage() != null) {
             sb.append(paymentResponse.getErrorMessage());
         }
-        if(paymentResponse.getPayment() != null && paymentResponse.getPayment().getStatuses() != null) {
+        if (paymentResponse.getPayment() != null && paymentResponse.getPayment().getStatuses() != null) {
             sb.append("\n");
-            for(Status status: paymentResponse.getPayment().getStatuses()) {
+            for (Status status : paymentResponse.getPayment().getStatuses()) {
                 sb.append(status.getCode());
                 sb.append(":");
                 sb.append(status.getDescription());
@@ -260,23 +261,27 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         String requestId = "no request id";
         String cardToken = "no card token";
         String transactionState = " unknown transaction state";
-        if(paymentResponse.getPayment() != null) {
+        String cardBrand = "";
+        if (paymentResponse.getPayment() != null) {
             Payment payment = paymentResponse.getPayment();
             transactionState = payment.getTransactionState();
             transactionId = payment.getTransactionId();
             requestId = payment.getRequestId();
             cardToken = payment.getCardToken().getTokenId();
+            cardBrand = payment.getCard().getCardType();
         }
         WritableMap wresp = new WritableNativeMap();
-        wresp.putString("transactionState",transactionState);
-        wresp.putString("transactionId",transactionId);
+        wresp.putString("transactionState", transactionState);
+        wresp.putString("transactionId", transactionId);
         wresp.putString("status", sb.toString());
-        wresp.putString("requestId",requestId);
+        wresp.putString("requestId", requestId);
         wresp.putString("cardToken", cardToken);
-            return wresp;
+        wresp.putString("cardBrand", cardBrand);
+        return wresp;
     }
-    public static  BigDecimal getAmount(String amount){
-        BigDecimal parsedAmount =new BigDecimal(amount);
+
+    public static BigDecimal getAmount(String amount) {
+        BigDecimal parsedAmount = new BigDecimal(amount);
         return parsedAmount;
     }
 
