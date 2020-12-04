@@ -212,7 +212,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         } else if (paymentResponse.getPayment() != null && paymentResponse.getPayment().getStatuses() != null) {
             WritableMap wresp = this.getWCRNPaymentResponse(paymentResponse);
             this.onPaymentSuccess.invoke(paymentResponse.getErrorMessage(), wresp.getString("cardToken"),
-                    wresp.getString("transactionState"), wresp.getString("transactionId"),
+                    wresp.getString("cardBrand"), wresp.getString("transactionState"), wresp.getString("transactionId"),
                     wresp.getString("requestId"));
         }
 
