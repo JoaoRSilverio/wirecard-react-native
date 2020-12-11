@@ -262,13 +262,17 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         String cardToken = "no card token";
         String transactionState = " unknown transaction state";
         String cardBrand = "";
-        if (paymentResponse.getPayment() != null) {
+          if (paymentResponse.getPayment() != null) {
             Payment payment = paymentResponse.getPayment();
             transactionState = payment.getTransactionState();
             transactionId = payment.getTransactionId();
             requestId = payment.getRequestId();
+            if(payment.getCardToken() != null){
             cardToken = payment.getCardToken().getTokenId();
+            }
+            if(payment.getCard() != null){
             cardBrand = payment.getCard().getCardType();
+            }
         }
         WritableMap wresp = new WritableNativeMap();
         wresp.putString("transactionState", transactionState);
