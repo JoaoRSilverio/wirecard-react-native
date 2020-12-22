@@ -7,7 +7,6 @@ Ios: paymentSDK/All 3.6.0
 this package is currently in development v2.0.0 will be production ready .
 
 ## react-native versions supported:
-0.60.0
 0.61.0
 0.62.2
 ## payment methods supported
