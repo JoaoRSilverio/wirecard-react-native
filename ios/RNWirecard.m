@@ -252,7 +252,7 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
     }
 
     if([paymentData objectForKey:@"setAttempt3d"] != nil){
-        cardResponse.attemptThreeD = true;
+        cardPayment.attemptThreeD = true;
     }
 
     return cardPayment;
