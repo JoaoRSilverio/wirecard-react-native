@@ -250,6 +250,11 @@ RCT_EXPORT_METHOD(newPaymentRequest:(NSDictionary *)payment
         cardPayment.token = cardToken;
         cardPayment.requireSecurityCode = true;
     }
+
+    if([paymentData objectForKey:@"setAttempt3d"] != nil){
+        cardResponse.attemptThreeD = true;
+    }
+
     return cardPayment;
 }
 - (void) logPayment: (WDECPayment *) payment{
