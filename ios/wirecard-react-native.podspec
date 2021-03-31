@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name         = "wirecard-react-native"
-  s.version      = "2.0.3"
+  s.version      = "2.0.4"
   s.summary      = 'lightweight react-native wrapper for wirecard'
   s.description  = "lightweight react-native wrapper for wirecard use wire card in react-native"
   s.homepage     = "https://github.com/JoaoRSilverio/wirecard-react-native"
