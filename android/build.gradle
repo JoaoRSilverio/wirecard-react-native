@@ -28,8 +28,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 9
-        versionName "2.0.4"
+        versionCode 10
+        versionName "2.0.5"
     }
     lintOptions {
         abortOnError false
@@ -41,7 +41,7 @@ android {
 
 }
 ext{
-    wirecardEcomLibraryVersion = "4.2.0"
+    wirecardEcomLibraryVersion = "4.3.0"
 }
 repositories {
     jcenter()

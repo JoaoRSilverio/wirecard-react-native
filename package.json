@@ -1,6 +1,7 @@
 {
   "name": "wirecard-react-native",
-  "version": "2.0.4",
+  "version": "2.0.5",
+  "homepage": "https://github.com/JoaoRSilverio/wirecard-react-native",
   "description": "Wirecard Mobile SDK Credit Card and Google Pay React-Native implementation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

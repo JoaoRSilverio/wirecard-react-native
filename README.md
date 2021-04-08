@@ -1,10 +1,8 @@
 
 # wirecard-react-native
 A React-Native wrapper for the Wirecard SDK's
-Android: com.wirecard.ecom:card 3.4.0
-Ios: paymentSDK/All 3.6.0
-
-this package is currently in development v2.0.0 will be production ready .
+Android: com.wirecard.ecom:card 4.3.0
+Ios: recomended paymentSDK/All 4.2.2 (podfile versions are chosen in the parent project Podfile)
 
 ## react-native versions supported:
 0.61.1
