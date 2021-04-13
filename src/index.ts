@@ -149,7 +149,9 @@ export default class ReactNativeWirecard{
             cardBrand: string,
             transactionState: any,
             transactionId: any,
-            requestId: any) => void,
+            requestId: any,
+            authorizationCode: string,
+            ) => void,
         onFailure: (
             error: any,
             tokenId: any,

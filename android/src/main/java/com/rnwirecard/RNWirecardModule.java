@@ -213,7 +213,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             WritableMap wresp = this.getWCRNPaymentResponse(paymentResponse);
             this.onPaymentSuccess.invoke(paymentResponse.getErrorMessage(), wresp.getString("cardToken"),
                     wresp.getString("cardBrand"), wresp.getString("transactionState"), wresp.getString("transactionId"),
-                    wresp.getString("requestId"));
+                    wresp.getString("requestId"),wresp.getString("authorizationCode"));
         }
 
     }
@@ -262,11 +262,13 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         String cardToken = "no card token";
         String transactionState = " unknown transaction state";
         String cardBrand = "";
+        String authorizationCode = "";
           if (paymentResponse.getPayment() != null) {
             Payment payment = paymentResponse.getPayment();
             transactionState = payment.getTransactionState();
             transactionId = payment.getTransactionId();
             requestId = payment.getRequestId();
+            authorizationCode = payment.getAuthorizationCode();
             if(payment.getCardToken() != null){
             cardToken = payment.getCardToken().getTokenId();
             }
@@ -281,6 +283,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         wresp.putString("requestId", requestId);
         wresp.putString("cardToken", cardToken);
         wresp.putString("cardBrand", cardBrand);
+        wresp.putString("authorizationCode",authorizationCode);
         return wresp;
     }
 
