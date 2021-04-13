@@ -213,7 +213,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
             WritableMap wresp = this.getWCRNPaymentResponse(paymentResponse);
             this.onPaymentSuccess.invoke(paymentResponse.getErrorMessage(), wresp.getString("cardToken"),
                     wresp.getString("cardBrand"), wresp.getString("transactionState"), wresp.getString("transactionId"),
-                    wresp.getString("requestId"),wresp.getString("authorizationCode"));
+                    wresp.getString("requestId"),wresp.getString("authorizationCode"),wresp.getString("transactionAt"));
         }
 
     }
@@ -263,12 +263,14 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         String transactionState = " unknown transaction state";
         String cardBrand = "";
         String authorizationCode = "";
+        String transactionAt = "";
           if (paymentResponse.getPayment() != null) {
             Payment payment = paymentResponse.getPayment();
             transactionState = payment.getTransactionState();
             transactionId = payment.getTransactionId();
             requestId = payment.getRequestId();
             authorizationCode = payment.getAuthorizationCode();
+            transactionAt = payment.getCompletionTimestamp();
             if(payment.getCardToken() != null){
             cardToken = payment.getCardToken().getTokenId();
             }
@@ -284,6 +286,7 @@ public class RNWirecardModule extends ReactContextBaseJavaModule implements Acti
         wresp.putString("cardToken", cardToken);
         wresp.putString("cardBrand", cardBrand);
         wresp.putString("authorizationCode",authorizationCode);
+        wresp.putString("transactionAt",transactionAt);
         return wresp;
     }
 
